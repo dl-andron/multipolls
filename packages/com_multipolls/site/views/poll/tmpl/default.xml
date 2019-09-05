@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<metadata>
+    <layout title="com_multipolls_poll" option="com_multipolls_poll_option">
+		<help
+			key = ""
+		/>
+		<message>
+			<![CDATA[com_multipolls_poll_desc]]>
+		</message>
+	</layout>
+    
+    <fields name="request">
+		<fieldset name="request"
+			addfieldpath="/administrator/components/com_multipolls/models/fields">
+
+			<field 
+              	name="id"
+              	type="selectpoll"
+            	label="COM_MULTIPOLLS_SELECT_POLL"
+				description="COM_MULTIPOLLS_SELECT_POLL_DESC"
+				required="true"              
+	        > 
+	        <option value="">COM_MULTIPOLLS_POLL_SELECT</option>           
+	        </field>
+
+	        <field 
+              	name="result_button"
+              	type="list"
+				label="COM_MULTIPOLLS_RESULT_BUTTON"
+				description="COM_MULTIPOLLS_RESULT_BUTTON_DESC"
+				default="0"
+				class="chzn-color"
+				>				
+				<option value="1">JSHOW</option>
+				<option value="0">JHIDE</option>           
+	        </field>
+
+	         <field 
+              	name="show_poll_name"
+              	type="list"
+				label="COM_MULTIPOLLS_POLL_NAME"
+				description="COM_MULTIPOLLS_POLL_NAME_DESC"
+				default="0"
+				class="chzn-color"
+				>				
+				<option value="1">JSHOW</option>
+				<option value="0">JHIDE</option>           
+	        </field>
+
+		</fieldset>
+	</fields>
+
+</metadata>

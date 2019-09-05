@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<form>
+    <fieldset>
+        <field 
+            name="id"
+            type="text"
+            default="0"
+            label="JGLOBAL_FIELD_ID_LABEL"
+            readonly="true"/>        
+
+        <field
+            name="published"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="chzn-color-state"
+            filter="intval"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+         </field>
+
+         <field 
+            name="publish_up"
+            type="calendar"
+            label="COM_MULTIPOLLS_PUBLISH_UP"
+            description="COM_MULTIPOLLS_PUBLISH_UP"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+        <field 
+            name="publish_down"
+            type="calendar"
+            label="COM_MULTIPOLLS_PUBLISH_DOWN"
+            description="COM_MULTIPOLLS_PUBLISH_DOWN"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+        <field 
+            name="created" 
+            type="calendar" 
+            label="COM_MULTIPOLLS_CREATED"
+            description="COM_MULTIPOLLS_CREATED"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+        <field name="img_url"
+            type="media"
+            label="COM_MULTIPOLLS_IMG_URL"            
+            class="input_url"
+            preview="tooltip" />
+
+        <field 
+            name="id_poll"
+            type="selectpoll"
+            label="COM_MULTIPOLLS_POLL"
+            required="required"                              
+        > 
+        <option value="">COM_MULTIPOLLS_POLL_SELECT</option>           
+        </field> 
+
+        <field 
+            name="id_type"
+            type="sql"            
+            query="SELECT id, type FROM #__multipolls_type_questions"
+            key_field="id"
+            value_field="type"
+            label="COM_MULTIPOLLS_QUESTION_TYPE"
+            required="required"                              
+        /> 
+
+        <field 
+            name="name_own"
+            type="text"            
+            label="COM_MULTIPOLLS_NAME_OWN"
+            description="COM_MULTIPOLLS_ANME_OWN_DESC"              
+            class="inputbox"
+            size="40"/>                             
+        />
+
+        <field name="ordering"
+            type="text"
+            label="COM_MULTIPOLLS_ORDERING"
+            description="COM_MULTIPOLLS_ORDERING_DESC"              
+            class="inputbox"
+            size="40"/>
+
+    </fieldset>   
+</form>

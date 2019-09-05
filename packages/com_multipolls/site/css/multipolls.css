@@ -1,0 +1,24 @@
+.multipoll{
+	background: whitesmoke;
+    border-radius: 10px;
+    padding: 10px;
+    border: 1px solid rgb(227, 227, 227);
+}
+
+.img-question,
+.captcha-image{
+	margin-bottom: 10px;
+}
+
+
+.multipoll .table.table-bordered{
+	background: #fff;
+}
+
+.captcha-image{
+	margin-top: 10px;
+}
+
+.multipoll label img{
+        padding-right: 10px;
+}

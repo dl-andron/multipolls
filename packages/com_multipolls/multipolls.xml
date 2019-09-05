@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="3.2.0" method="upgrade">
+
+	<name>COM_MULTIPOLLS</name>	
+	<author>A.Lipnitski</author>
+	<creationDate>August 2019</creationDate>
+	<copyright></copyright>	
+	<license></license>
+	<version>1.0.1</version>	
+	<description>COM_MULTIPOLLS_DESC</description>
+
+	<scriptfile>install/install.php</scriptfile>
+
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>controller.php</filename>
+		<filename>multipolls.php</filename>
+		<filename>router.php</filename>		
+        <folder>models</folder>
+        <folder>js</folder>
+		<folder>css</folder>
+        <folder>views</folder>
+        <folder>controllers</folder>
+        <folder>captcha</folder>	
+	</files>
+
+	<install>
+		<sql>
+			<file charset="utf8" driver="mysql">install/install.sql</file>
+		</sql>
+	</install>
+
+	<uninstall>
+		<sql>
+			<file charset="utf8" driver="mysql">install/uninstall.sql</file>
+		</sql>
+	</uninstall>
+
+	<update>
+		<schemas>
+			<schemapath type="mysql">install/updates</schemapath>
+		</schemas>
+	</update>
+
+	<languages folder="site">        
+        <language tag="ru-RU">language/ru-RU/ru-RU.com_multipolls.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.com_multipolls.ini</language>
+    </languages>
+	<administration>	
+		<menu link='index.php?option=com_multipolls'>COM_MULTIPOLLS</menu>
+		<submenu>
+            <menu link="option=com_multipolls&amp;view=polls">COM_MULTIPOLLS_ITEM_SUBMENU_POLLS</menu>
+            <menu link="option=com_multipolls&amp;view=questions">COM_MULTIPOLLS_ITEM_SUBMENU_QUESTIONS</menu>
+            <menu link="option=com_multipolls&amp;view=answers">COM_MULTIPOLLS_ITEM_SUBMENU_ANSWERS</menu>            
+            <menu link="option=com_multipolls&amp;view=langs">COM_MULTIPOLLS_ITEM_SUBMENU_LANGS</menu>                      
+        </submenu>
+		<files folder="admin">
+			<filename>index.html</filename>
+            <filename>multipolls.php</filename>
+            <filename>controller.php</filename>
+            <filename>config.xml</filename>
+            <filename>access.xml</filename>
+            <folder>install</folder>
+			<folder>tables</folder>
+            <folder>models</folder>
+            <folder>views</folder>
+            <folder>controllers</folder>
+            <folder>helpers</folder>       			
+		</files>
+		<languages folder="admin">           
+            <language tag="ru-RU">language/ru-RU/ru-RU.com_multipolls.ini</language>           
+            <language tag="ru-RU">language/ru-RU/ru-RU.com_multipolls.sys.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_multipolls.ini</language>           
+            <language tag="en-GB">language/en-GB/en-GB.com_multipolls.sys.ini</language>
+		</languages>		
+	</administration>	
+
+</extension>

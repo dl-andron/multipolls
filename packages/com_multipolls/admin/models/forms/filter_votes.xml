@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="filter">
+        <field
+                name="search"
+                type="text"
+                label="COM_CONTENT_FILTER_SEARCH_DESC"
+                hint="JSEARCH_FILTER"
+        /> 
+
+        <field 
+               name="id_poll"
+               type="selectpoll"
+               onchange="this.form.submit();"               
+        > 
+        <option value="">COM_MULTIPOLLS_POLL_SELECT</option>           
+        </field>
+
+        <field 
+               name="id_question"
+               type="selectquestion"
+               onchange="this.form.submit();"               
+        > 
+        <option value="">COM_MULTIPOLLS_QUESTION_SELECT</option>           
+        </field>             
+
+    </fields>
+    <fields name="list">
+        <field
+                name="fullordering"
+                type="list"
+                label="COM_CONTENT_LIST_FULL_ORDERING"
+                description="COM_CONTENT_LIST_FULL_ORDERING_DESC"
+                onchange="this.form.submit();"                
+        >
+            <option value="">JGLOBAL_SORT_BY</option> 
+            <option value="answer_name ASC">COM_MULTIPOLLS_ANSWER_ASC</option>
+            <option value="answer_name DESC">COM_MULTIPOLLS_ANSWER_DESC</option>      
+            <option value="ip ASC">COM_MULTIPOLLS_IP_ASC</option>
+            <option value="ip DESC">COM_MULTIPOLLS_IP_DESC</option> 
+            <option value="user_agent ASC">COM_MULTIPOLLS_USER_AGENT_ASC</option>
+            <option value="user_agent DESC">COM_MULTIPOLLS_USER_AGENT_DESC</option>           
+            <option value="date_voting ASC">COM_MULTIPOLLS_DATE_VOTING_ASC</option>
+            <option value="date_voting DESC">COM_MULTIPOLLS_DATE_VOTING_DESC</option>
+            <option value="id_vote ASC">JGRID_HEADING_ID_ASC</option>
+            <option value="id_vote DESC">JGRID_HEADING_ID_DESC</option>            
+        </field>
+        <field
+                name="limit"
+                type="limitbox"
+                class="inputbox input-mini"
+                default="25"
+                label="COM_CONTENT_LIST_LIMIT"
+                description="COM_CONTENT_LIST_LIMIT_DESC"
+                onchange="this.form.submit();"
+        />
+    </fields>
+</form>

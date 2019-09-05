@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<form>
+    <fieldset>
+        <field 
+            name="id"
+            type="text"
+            default="0"
+            label="JGLOBAL_FIELD_ID_LABEL"
+            readonly="true"/>        
+
+        <field
+            name="published"
+            type="list"
+            label="JSTATUS"
+            description="JFIELD_PUBLISHED_DESC"
+            class="chzn-color-state"
+            filter="intval"
+            size="1"
+            default="1">
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+         </field>
+
+         <field 
+            name="publish_up"
+            type="calendar"
+            label="COM_MULTIPOLLS_PUBLISH_UP"
+            description="COM_MULTIPOLLS_PUBLISH_UP"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+        <field 
+            name="publish_down"
+            type="calendar"
+            label="COM_MULTIPOLLS_PUBLISH_DOWN"
+            description="COM_MULTIPOLLS_PUBLISH_DOWN"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+        <field 
+            name="created" 
+            type="calendar" 
+            label="COM_MULTIPOLLS_CREATED"
+            description="COM_MULTIPOLLS_CREATED"
+            translateformat="true"
+            showtime="true"
+            size="22"
+            filter="user_utc" 
+        />
+
+    </fieldset>   
+</form>

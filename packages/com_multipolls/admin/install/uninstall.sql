@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS `#__multipolls_polls`;
+DROP TABLE IF EXISTS `#__multipolls_questions`;
+DROP TABLE IF EXISTS `#__multipolls_answers`;
+DROP TABLE IF EXISTS `#__multipolls_langs`;
+DROP TABLE IF EXISTS `#__multipolls_select_votes`;
+DROP TABLE IF EXISTS `#__multipolls_text_votes`;
+DROP TABLE IF EXISTS `#__multipolls_cb_votes`;
+DROP TABLE IF EXISTS `#__multipolls_radio_own_votes`;
+DROP TABLE IF EXISTS `#__multipolls_radio_votes`;
+DROP TABLE IF EXISTS `#__multipolls_type_questions`;
+DROP TABLE IF EXISTS `#__multipolls_select_text_votes`;
+DROP TABLE IF EXISTS `#__multipolls_yn_votes`;
