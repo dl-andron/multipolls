@@ -24,6 +24,9 @@ class MultipollsModelPoll extends JModelItem
 		$show_poll_name = $app->input->getInt('show_poll_name');
 		$this->setState('poll.show_poll_name', $show_poll_name);
 
+		$hide_answers = $app->input->getInt('hide_answers');
+		$this->setState('poll.hide_answers', $hide_answers);
+
 		$params = $app->getParams();
 		$this->setState('params', $params);
 	}
@@ -34,6 +37,11 @@ class MultipollsModelPoll extends JModelItem
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('poll.id');
 		$result_button = (!empty($result_button)) ? $result_button : (int) $this->getState('poll.result_button');
 		$show_poll_name = (!empty($show_poll_name)) ? $show_poll_name : (int) $this->getState('poll.show_poll_name');
+		$hide_answers = (!empty($hide_answers)) ? $hide_answers : (int) $this->getState('poll.hide_answers');
+
+		//разрешить показ вопросов по одному
+		//задаю по умолчанию
+		$allow_hidden_answers = true;
 		
 		try
 		{
@@ -103,7 +111,12 @@ class MultipollsModelPoll extends JModelItem
 	        	$data->poll_content[$q['qid']]['q_name'] = $q['q_name'];
 	        	$data->poll_content[$q['qid']]['q_image'] = $q['q_image'];
 	        	$data->poll_content[$q['qid']]['id_type'] = $q['id_type'];	
-	        	$data->poll_content[$q['qid']]['name_own'] = $q['name_own'];        	
+	        	$data->poll_content[$q['qid']]['name_own'] = $q['name_own']; 
+
+	        	if(!in_array($q['id_type'], array(1,6,7)))
+	        	{
+	        		$allow_hidden_answers = false;
+	        	}     	
 	        }
 	       	
 	       	foreach ($answers as $a) 
@@ -114,6 +127,8 @@ class MultipollsModelPoll extends JModelItem
 	       
 	        $data->result_button = $result_button;
 	        $data->show_poll_name = $show_poll_name;
+	        $data->hide_answers = $hide_answers;
+	        $data->allow_hidden_answers = $allow_hidden_answers;
 
 			$this->_item = $data;
 		}
@@ -396,14 +411,9 @@ class MultipollsModelPoll extends JModelItem
 				$this->setError($e->getMessage());
 				return false;		    
 			}
-		}
+		}		
 		
-		
-		
-		
-		$query = $db->getQuery(true);
-		
-		
+		$query = $db->getQuery(true);		
 		
 		if(!empty($data->votes['yn']))
 		{
@@ -459,7 +469,7 @@ class MultipollsModelPoll extends JModelItem
 
 	public function generateQuestion($id_question, $question, $context = 'component')
 	{	
-		$result = "<h4>".$question['q_name']."</h4>";		
+		$result = "<div class='answers'><h4>".$question['q_name']."</h4>";		
 
 		if ($question['q_image'] !='') 
 		{
@@ -498,7 +508,9 @@ class MultipollsModelPoll extends JModelItem
 
 			default:				
 				break;
-		}		
+		}
+
+		$result .= "</div>";	
 
 		return $result;
 	}
@@ -508,7 +520,9 @@ class MultipollsModelPoll extends JModelItem
 		$answers = '';
 
 		if(isset($question['answers']))
-		{
+		{			
+			$answers .= "<div class='r-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				$answers .= "<label class='radio'>";
@@ -519,7 +533,9 @@ class MultipollsModelPoll extends JModelItem
 				}							
 													
 				$answers .= "<input type='radio' name='r[".$id_question."]' value=".$id." required>".$answer."</label>";					
-			}			
+			}
+
+			$answers .= "</div>";		
 		}
 
 		return $answers;
@@ -531,6 +547,8 @@ class MultipollsModelPoll extends JModelItem
 
 		if(isset($question['answers']))
 		{
+			$answers .= "<div class='cb-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				$answers .= "<label class='checkbox'>";
@@ -541,7 +559,9 @@ class MultipollsModelPoll extends JModelItem
 				}							
 													
 				$answers .= "<input type='checkbox' name='cb[".$id_question."][]' value=".$id.">".$answer."</label>";					
-			}			
+			}
+
+			$answers .= "</div>";
 		}
 
 		return $answers;
@@ -552,7 +572,9 @@ class MultipollsModelPoll extends JModelItem
 		$answers = '';
 
 		if(isset($question['answers']))
-		{
+		{	
+			$answers .= "<div class='s-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				if ($question['images'][$id] != '')
@@ -570,7 +592,9 @@ class MultipollsModelPoll extends JModelItem
 				}
 
 				$answers .= "</select>";
-			}			
+			}
+
+			$answers .= "</div>";
 		}
 
 		return $answers;
@@ -582,6 +606,8 @@ class MultipollsModelPoll extends JModelItem
 
 		if(isset($question['answers']))
 		{
+			$answers .= "<div class='ta-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{	
 				if ($question['images'][$id] != '')
@@ -593,6 +619,8 @@ class MultipollsModelPoll extends JModelItem
 			
 				$answers .= "<textarea name='ta[".$id_question."-".$id."]'></textarea>";					
 			}
+
+			$answers .= "</div>";
 		}
 
 		return $answers;
@@ -604,6 +632,8 @@ class MultipollsModelPoll extends JModelItem
 
 		if(isset($question['answers']))
 		{
+			$answers .= "<div class='sta-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				if ($question['images'][$id] != '')
@@ -623,7 +653,9 @@ class MultipollsModelPoll extends JModelItem
 				$answers .= "</select>";
 
 				$answers .= "<textarea name='sta-text[".$id_question."-".$id."]'></textarea>";
-			}			
+			}
+
+			$answers .= "</div>";	
 		}
 
 		return $answers;
@@ -635,6 +667,8 @@ class MultipollsModelPoll extends JModelItem
 
 		if(isset($question['answers']))
 		{
+			$answers .= "<div class='ro-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				$answers .= "<label class='radio'>";
@@ -670,7 +704,8 @@ class MultipollsModelPoll extends JModelItem
 			{	
 				$answers .= "type='text' placeholder='".JText::_('MOD_MULTIPOLLS_OWN_ANSWER')."'></label>";				
 			}
-							
+
+			$answers .= "</div>";							
 		}
 
 		return $answers;
@@ -682,6 +717,8 @@ class MultipollsModelPoll extends JModelItem
 
 		if(isset($question['answers']))
 		{
+			$answers .= "<div class='yn-answers'>";
+
 			foreach ($question['answers'] as $id => $answer) 
 			{
 				if ($question['images'][$id] != '')
@@ -717,14 +754,12 @@ class MultipollsModelPoll extends JModelItem
 					$answers .= JText::_('MOD_MULTIPOLLS_NO');
 				}
 
-				$answers .=  "</label>"; 
-	
-				
-			}			
+				$answers .=  "</label>";				
+			}
+
+			$answers .= "</div>";			
 		}
 
 		return $answers;
-	}
-
-	
+	}	
 }	

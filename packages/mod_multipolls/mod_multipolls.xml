@@ -5,7 +5,7 @@
 	<creationDate>August 2019</creationDate>
 	<copyright></copyright>	
 	<license></license>
-	<version>1.0.1</version>	
+	<version>1.0.2</version>	
 	<description>MOD_MULTIPOLLS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_multipolls">mod_multipolls.php</filename>
@@ -75,6 +75,18 @@
 					description="MOD_MULTIPOLLS_SHOW_CONTENT_DESC"				
 					class="btn-group btn-group-yesno"
 					default="1"
+					filter="integer"
+					>
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+				<field
+					name="hide_answers"
+					type="radio"
+					label="MOD_MULTIPOLLS_HIDE_ANSWERS"	
+					description="MOD_MULTIPOLLS_HIDE_ANSWERS_DESC"				
+					class="btn-group btn-group-yesno"
+					default="0"
 					filter="integer"
 					>
 					<option value="1">JYES</option>

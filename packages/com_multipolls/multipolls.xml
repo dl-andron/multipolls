@@ -6,7 +6,7 @@
 	<creationDate>August 2019</creationDate>
 	<copyright></copyright>	
 	<license></license>
-	<version>1.0.1</version>	
+	<version>1.0.2</version>	
 	<description>COM_MULTIPOLLS_DESC</description>
 
 	<scriptfile>install/install.php</scriptfile>

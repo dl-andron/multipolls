@@ -4,11 +4,12 @@
 	<author>A.Lipnitski</author>
 	<creationDate>August 2019</creationDate>
  	<packagename>multipolls</packagename>
-	 <version>1.0.1</version>	 
+	 <version>1.0.2</version>	 
 	 <packager>A.Lipnitski</packager>	
 	 <description>Multipolls! Installer Package.</description>
 	 <files folder="packages">
-		<file type="module" id="mod_multipolls" client="site">mod_multipolls</file>		 
-		<file type="component" id="com_multipolls">com_multipolls</file>
-	 </files>	 
+		<file type="module" id="mod_multipolls" client="site">mod_multipolls.zip</file>		 
+		<file type="component" id="com_multipolls">com_multipolls.zip</file>
+	 </files>
+	 
 </extension>

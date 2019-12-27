@@ -15,14 +15,17 @@ require_once JPATH_BASE.'/components/com_multipolls/captcha/generate.php';
 
 JHtml::_('jquery.framework');
 
+$doc = JFactory::getDocument();
+
 $id_poll = $params->get('id_poll', '');
 $show_content = $params->get('show_content' , '1');
 $show_title = $params->get('show_title' , '1');	
+
 $curl_url = JFactory::getURI();
 
 if($show_title)
 {
-	JFactory::getDocument()->addScript(JUri::root(true).'/modules/mod_multipolls/js/active-title.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/active-title.js');
 }
 
 $check_cookie = $app->input->get->cookie->get('multipoll'.$id_poll, '');
@@ -49,14 +52,12 @@ if(!empty($post_id_poll) && !$check_cookie)
 	$votes['sta'] = $app->input->get('sta', array(), 'ARRAY');
 	$votes['sta-text'] = $app->input->get('sta-text', array(), 'ARRAY');
 	$votes['ro'] = $app->input->get('ro', array(), 'ARRAY');
-	$votes['yn'] = $app->input->get('yn', array(), 'ARRAY');
-		
-	$poll_id = $app->input->get('id_poll', '0', 'int');
-
+	$votes['yn'] = $app->input->get('yn', array(), 'ARRAY');		
+	
 	JModelLegacy::addIncludePath(JPATH_SITE .'/components/com_multipolls/models');	
 	$model = JModelLegacy::getInstance('Poll', 'MultipollsModel');
 
-	if(!$model->checkQuestions($poll_id, $votes))
+	if(!$model->checkQuestions($post_id_poll, $votes))
 	{		
 		$app->redirect($curl_url, JText::_('MOD_MULTIPOLLS_VOTES_ERROR'),'error');
 	}
@@ -69,7 +70,7 @@ if(!empty($post_id_poll) && !$check_cookie)
 
 	if ($model->saveVote($data))
 	{			
-		$app->input->cookie->set('multipoll'.$id_poll, '1', time() + (3600 * 24), $app->get('cookie_path', '/'), $app->get('cookie_domain'));			
+		$app->input->cookie->set('multipoll'.$post_id_poll, '1', time() + (3600 * 24), $app->get('cookie_path', '/'), $app->get('cookie_domain'));			
 	    $app->redirect($curl_url, JText::_('MOD_MULTIPOLLS_VOTES_SUCCESS'),'message');	 	             
 	}	
 }
@@ -88,15 +89,21 @@ else
 	$item = $model->getItem($id_poll);	
 
 	$res_button = $params->get('result_button', '0');
-	$show_text = $params->get('show_text' , '1');	
+	$show_text = $params->get('show_text' , '1');
+	$hide_answers = $params->get('hide_answers' , '0');	
 
-	JFactory::getDocument()->addScript(JUri::root(true).'/modules/mod_multipolls/js/submit.js');
-	JFactory::getDocument()->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/submit.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
 
 	if($res_button)
 	{
-		JFactory::getDocument()->addScript(JUri::root(true).'/modules/mod_multipolls/js/results.js');
-	}	
+		$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/results.js');
+	}
+
+	if($hide_answers && $item->allow_hidden_answers)
+	{
+		$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/hide-answers.js');
+	}
 
 	require JModuleHelper::getLayoutPath('mod_multipolls', $params->get('layout', 'default'));
 }

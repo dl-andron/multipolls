@@ -82,9 +82,21 @@ $crypt_captcha = encrypt_decrypt('encrypt' , generateRandomString(6));
 	            }
 	        });
 	        return false;       
-	    });     
+	    });	   
 
 	</script>
+
+	<?php if($hide_answers && $item->allow_hidden_answers) : ?>
+
+		<script type="text/javascript">  
+			jQuery(document).ready(function()
+		    {
+		    	jQuery('#multipoll-<?php echo $item->poll_id ?> .poll-button input[type="submit"]').attr('disabled', true);
+				jQuery('#multipoll-<?php echo $item->poll_id ?> .answers:not(:first)').hide(); 				
+		    });
+	    </script>
+
+	<?php endif ?>	
 
 </div>
 <?php endif; ?>
