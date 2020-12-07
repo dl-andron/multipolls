@@ -23,12 +23,7 @@ class MultipollsHelper
         JHtmlSidebar::addEntry(
             JText::_( 'COM_MULTIPOLLS_ITEM_SUBMENU_ANSWERS' ),
             'index.php?option=com_multipolls&view=answers',
-            $vName == 'answers' );
-
-        /*JHtmlSidebar::addEntry(
-            JText::_( 'COM_MULTIPOLLS_ITEM_SUBMENU_VOTES' ),
-            'index.php?option=com_multipolls&view=votes',
-            $vName == 'votes' );*/
+            $vName == 'answers' );        
 
         JHtmlSidebar::addEntry(
             JText::_( 'COM_MULTIPOLLS_ITEM_SUBMENU_LANGS' ),

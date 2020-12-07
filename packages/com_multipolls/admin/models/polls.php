@@ -66,4 +66,85 @@ class MultipollsModelPolls extends JModelList
         $query->order( $db->escape( $orderCol . ' ' . $orderDirn ) );                
         return $query;
     }
+
+    public function delete($ids)
+    {   
+        $db = $this->getDbo();
+
+        $statModel = JModelLegacy::getInstance('Stat', 'MultipollsModel');
+
+        //список вопросов
+        $query = $db->getQuery(true); 
+
+        $query->select($db->quoteName(array('id')));
+        $query->from($db->quoteName('#__multipolls_questions'));
+        $query->where($db->quoteName('id_poll') . 'IN (' . implode(',', $db->quote($ids)) . ')'); 
+        $db->setQuery($query);
+        $list_questions = $db->loadColumn();
+
+        //список ответов
+        $query = $db->getQuery(true); 
+
+        $query->select($db->quoteName(array('id')));
+        $query->from($db->quoteName('#__multipolls_answers'));
+        $query->where($db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'); 
+        $db->setQuery($query);
+        $list_answers = $db->loadColumn();
+        
+        $db->transactionStart();
+
+        try {     
+            foreach ($ids as $id) {
+                $statModel->clearResults($id);//удаляем результаты
+            }
+
+            //удаляем ответы
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id') . 'IN (' . implode(',', $db->quote($list_answers)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_answers'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+            //удаляем вопросы
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_questions'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+            //удаляем опросы
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id') . 'IN (' . implode(',', $db->quote($ids)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_polls'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();            
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        $db->transactionCommit();
+
+        return true;
+    }
 }

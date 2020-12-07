@@ -7,11 +7,10 @@ $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 
 ?>
 
-
 <div class="item-page multipoll">
-	<h3><?php echo $this->result['poll_name']; ?></h3>
-	
-	<?php if(!empty($this->result['question'])) :?>
+	<h3><?php echo $this->result['poll_name']; ?></h3>	
+
+	<?php if($this->show_result && !empty($this->result['question'])) :?>
 
 		<?php foreach ($this->result['question'] as $question) : ?>
 				<h3><?php echo $question['name'] ?></h3>	
@@ -40,13 +39,17 @@ $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 						case '7':
 							echo $this->loadTemplate('yn');
 							break;	
+						case '8':
+							echo $this->loadTemplate('cb_own');
+							break;	
 						default:						
 							break;
 					endswitch;
 				?>		
 					
 			<?php endforeach; ?>
-
+	<?php else :?>
+		<?php echo JText::_('COM_MULTIPOLLS_ALREADY_VOTED'); ?>
 	<?php endif; ?>	
 
 </div>	

@@ -21,7 +21,7 @@ $id_poll = $params->get('id_poll', '');
 $show_content = $params->get('show_content' , '1');
 $show_title = $params->get('show_title' , '1');	
 
-$curl_url = JFactory::getURI();
+$curr_url = JFactory::getURI();
 
 if($show_title)
 {
@@ -42,7 +42,7 @@ if(!empty($post_id_poll) && !$check_cookie)
 		
 	if (!$real_captcha || $user_captcha != $real_captcha)
 	{				
-		$app->redirect($curl_url, JText::_('MOD_MULTIPOLLS_CAPTCHA_ERROR'),'error');
+		$app->redirect($curr_url, JText::_('MOD_MULTIPOLLS_CAPTCHA_ERROR'),'error');
 	}
 
 	$votes['r'] = $app->input->get('r', array(), 'ARRAY');	    	
@@ -52,27 +52,30 @@ if(!empty($post_id_poll) && !$check_cookie)
 	$votes['sta'] = $app->input->get('sta', array(), 'ARRAY');
 	$votes['sta-text'] = $app->input->get('sta-text', array(), 'ARRAY');
 	$votes['ro'] = $app->input->get('ro', array(), 'ARRAY');
-	$votes['yn'] = $app->input->get('yn', array(), 'ARRAY');		
+	$votes['yn'] = $app->input->get('yn', array(), 'ARRAY');
+	$votes['cbo'] = $app->input->get('cbo', array(), 'ARRAY');		
 	
 	JModelLegacy::addIncludePath(JPATH_SITE .'/components/com_multipolls/models');	
 	$model = JModelLegacy::getInstance('Poll', 'MultipollsModel');
 
 	if(!$model->checkQuestions($post_id_poll, $votes))
 	{		
-		$app->redirect($curl_url, JText::_('MOD_MULTIPOLLS_VOTES_ERROR'),'error');
+		$app->redirect($curr_url, JText::_('MOD_MULTIPOLLS_VOTES_ERROR'),'error');
 	}
 
 	$data = new stdClass;
 	$data->votes = $votes;
 	$data->ip = $app->input->server->get('REMOTE_ADDR');		
 	$data->user_agent = JBrowser::getInstance()->getAgentString();
-	$data->date_vote = JFactory::getDate();	
+	$data->date_vote = JFactory::getDate('now', 'Europe/Minsk');
 
 	if ($model->saveVote($data))
 	{			
 		$app->input->cookie->set('multipoll'.$post_id_poll, '1', time() + (3600 * 24), $app->get('cookie_path', '/'), $app->get('cookie_domain'));			
-	    $app->redirect($curl_url, JText::_('MOD_MULTIPOLLS_VOTES_SUCCESS'),'message');	 	             
-	}	
+	    $app->redirect($curr_url, JText::_('MOD_MULTIPOLLS_VOTES_SUCCESS'),'message');	 	             
+	} else {
+		$app->redirect($curr_url, JText::_('MOD_MULTIPOLLS_INCORRECT_ANSWER'),'error');
+	}
 }
 
 elseif ($check_cookie) 
@@ -94,6 +97,7 @@ else
 
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/submit.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-checkbox.js');
 
 	if($res_button)
 	{

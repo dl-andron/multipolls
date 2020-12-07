@@ -27,6 +27,9 @@ class MultipollsModelPoll extends JModelItem
 		$hide_answers = $app->input->getInt('hide_answers');
 		$this->setState('poll.hide_answers', $hide_answers);
 
+		$show_result_after_vote = $app->input->getInt('show_result_after_vote');
+		$this->setState('poll.show_result_after_vote', $show_result_after_vote);
+
 		$params = $app->getParams();
 		$this->setState('params', $params);
 	}
@@ -38,6 +41,7 @@ class MultipollsModelPoll extends JModelItem
 		$result_button = (!empty($result_button)) ? $result_button : (int) $this->getState('poll.result_button');
 		$show_poll_name = (!empty($show_poll_name)) ? $show_poll_name : (int) $this->getState('poll.show_poll_name');
 		$hide_answers = (!empty($hide_answers)) ? $hide_answers : (int) $this->getState('poll.hide_answers');
+		$show_result_after_vote = (!empty($show_result_after_vote)) ? $show_result_after_vote : (int) $this->getState('poll.show_result_after_vote');
 
 		//разрешить показ вопросов по одному
 		//задаю по умолчанию
@@ -129,6 +133,7 @@ class MultipollsModelPoll extends JModelItem
 	        $data->show_poll_name = $show_poll_name;
 	        $data->hide_answers = $hide_answers;
 	        $data->allow_hidden_answers = $allow_hidden_answers;
+	        $data->show_result_after_vote = $show_result_after_vote;
 
 			$this->_item = $data;
 		}
@@ -147,6 +152,23 @@ class MultipollsModelPoll extends JModelItem
 		}		
 
 		return $this->_item;
+	}
+
+	//возвращает для вопроса максимальное значение ранжирования
+	//по умолчанию 10
+	private function _getSelectRangeValue($id_question)
+	{
+		$db = $this->getDbo();
+        $query = $db->getQuery(true); 
+
+        $query->select($db->quoteName('max_range'));
+        $query->from($db->quoteName('#__multipolls_select_range'));
+        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));  
+
+        $db->setQuery($query);
+        $range = $db->loadResult();
+
+        return !empty($range) ? $range : 10;
 	}
 
 	//метод проверяет наличие ответов на вопросы с radio-button
@@ -187,7 +209,16 @@ class MultipollsModelPoll extends JModelItem
 				$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
 				return false;
 			}
-		}		
+		}	
+
+		foreach ($votes['cbo'] as $key => $value) 
+		{
+			if (in_array('custom', $value) && trim($votes['cbo']['custom-'.$key]) == '') 
+			{				
+				$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+				return false;
+			}
+		}	
 
 		foreach ($qid as $value) 
 		{ 
@@ -266,6 +297,15 @@ class MultipollsModelPoll extends JModelItem
 
 		if(!empty($data->votes['s']))
 		{
+			
+			//каждое имя поля ввода ответа состоит из [id_вопроса-id_ответа]
+			//т.к. id_вопроса у всех ответов одинаковый
+			//то берем первый ответ и вытягиваем id_вопроса
+			$id_question = explode("-",array_key_first($data->votes['s']))[0];	
+
+			//проверяем максимально допустимое значение для ответа
+			$max_available_val = $this->_getSelectRangeValue($id_question);
+
 			try
 			{					
 				$columns = array('id_question', 'id_answer', 'value', 'ip', 'user_agent', 'date_voting');				
@@ -274,7 +314,7 @@ class MultipollsModelPoll extends JModelItem
 
 				foreach ($data->votes['s'] as $key => $vote) 
 				{		
-					if (!is_numeric($vote) || $vote < 1 || $vote > 10) 
+					if (!is_numeric($vote) || $vote < 1 || $vote > $max_available_val) 
 					{
 					    $db->transactionRollback();
 						$this->setError(JText::_('COM_MULTIPOLLS_INCORRECT_ANSWER'));
@@ -338,7 +378,15 @@ class MultipollsModelPoll extends JModelItem
 		$query = $db->getQuery(true);
 
 		if(!empty($data->votes['sta']))
-		{
+		{	
+			//каждое имя поля ввода ответа состоит из [id_вопроса-id_ответа]
+			//т.к. id_вопроса у всех ответов одинаковый
+			//то берем первый ответ и вытягиваем id_вопроса
+			$id_question = explode("-",array_key_first($data->votes['sta']))[0];	
+
+			//проверяем максимально допустимое значение для ответа
+			$max_available_val = $this->_getSelectRangeValue($id_question);
+
 			try
 			{					
 				$columns = array('id_question', 'id_answer', 'value', 'text', 'ip', 'user_agent', 'date_voting');				
@@ -347,7 +395,7 @@ class MultipollsModelPoll extends JModelItem
 
 				foreach ($data->votes['sta'] as $key => $vote) 
 				{					
-					if (!is_numeric($vote) || $vote < 1 || $vote > 10) 
+					if (!is_numeric($vote) || $vote < 1 || $vote > $max_available_val) 
 					{
 					    $db->transactionRollback();
 						$this->setError(JText::_('COM_MULTIPOLLS_INCORRECT_ANSWER'));
@@ -424,14 +472,7 @@ class MultipollsModelPoll extends JModelItem
 				$query->columns($db->quoteName($columns));		
 
 				foreach ($data->votes['yn'] as $key => $vote) 
-				{		
-					// if (!is_numeric($vote) || $vote < 1 || $vote > 10) 
-					// {
-					    // $db->transactionRollback();
-						// $this->setError(JText::_('COM_MULTIPOLLS_INCORRECT_ANSWER'));
-						// return false;
-					// }
-						
+				{						
 					$qa = explode("-",$key);
 				    $rows = array($db->quote($qa[0]), $db->quote($qa[1]), $db->quote($vote), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
 				    $query->values(implode(',', $rows));		       
@@ -448,7 +489,59 @@ class MultipollsModelPoll extends JModelItem
 				return false;		    
 			}
 		}
-		
+
+		$query = $db->getQuery(true);
+
+		if(!empty($data->votes['cbo']))
+		{
+			try
+			{					
+				$columns = array('id_question', 'answers', 'own_answer', 'ip', 'user_agent', 'date_voting');				
+				$query->insert($db->quoteName('#__multipolls_cb_own_votes'));
+				$query->columns($db->quoteName($columns));		
+
+				foreach ($data->votes['cbo'] as $key => $vote) 
+				{	
+					if(strpos($key, 'custom-') !== false) {	
+						continue;						
+					}	
+
+					//показывает что есть данные для вставки
+					$exist_data = false;
+					
+					if(in_array('custom', $vote)){							
+						$rows = array($db->quote($key), $db->quote(''), $db->quote($data->votes['cbo']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+
+						$key_custom = array_search('custom', $vote);
+						unset($vote[$key_custom]);
+
+						$query->values(implode(',', $rows));
+
+						$exist_data = true;
+					}
+
+					if(!empty($vote)) {
+						$rows = array($db->quote($key), $db->quote(implode(",", $vote)), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+				    	$query->values(implode(',', $rows));
+
+				    	$exist_data = true;
+					}														       
+				}
+			   	
+			   	if($exist_data){
+			   		$db->setQuery($query);
+					$db->execute();
+			   	}			    
+			    			    
+			}
+
+			catch (Exception $e)
+			{	
+				$db->transactionRollback();
+				$this->setError($e->getMessage());
+				return false;		    
+			}
+		}		
 
 		$db->transactionCommit();
 
@@ -505,6 +598,10 @@ class MultipollsModelPoll extends JModelItem
 			case '7':
 				$result .= $this->_generateYn($id_question, $question, $context);
 				break;
+
+			case '8':
+				$result .= $this->_generateCheckboxOwn($id_question, $question, $context);
+				break;	
 
 			default:				
 				break;
@@ -586,7 +683,10 @@ class MultipollsModelPoll extends JModelItem
 
 				$answers .=	"<select style='width:auto' name='s[".$id_question."-".$id."]' id='select".$id."'>";
 
-				for ($i = 1; $i <= 10; $i++) 
+				//беру для данного вопроса максимальное значение ранжирования
+				$range = $this->_getSelectRangeValue($id_question);
+
+				for ($i = 1; $i <= $range; $i++) 
 				{ 
 					$answers .= "<option>".$i."</option>";
 				}
@@ -645,7 +745,10 @@ class MultipollsModelPoll extends JModelItem
 
 				$answers .=	"<select style='width:auto' name='sta[".$id_question."-".$id."]' id='select".$id."'>";
 
-				for ($i = 1; $i <= 10; $i++) 
+				//беру для данного вопроса максимальное значение ранжирования
+				$range = $this->_getSelectRangeValue($id_question);
+
+				for ($i = 1; $i <= $range; $i++) 
 				{ 
 					$answers .= "<option>".$i."</option>";
 				}
@@ -697,12 +800,12 @@ class MultipollsModelPoll extends JModelItem
 
 			if ($context == 'component')
 			{	
-				$answers .= "type='text' placeholder='".JText::_('COM_MULTIPOLLS_OWN_ANSWER')."'></label>";				
+				$answers .= "type='text' placeholder='".JText::_('COM_MULTIPOLLS_OWN_ANSWER')."'></label>";		
 			}
 
 			elseif ($context == 'module')
 			{	
-				$answers .= "type='text' placeholder='".JText::_('MOD_MULTIPOLLS_OWN_ANSWER')."'></label>";				
+				$answers .= "type='text' placeholder='".JText::_('MOD_MULTIPOLLS_OWN_ANSWER')."'></label>";		
 			}
 
 			$answers .= "</div>";							
@@ -761,5 +864,55 @@ class MultipollsModelPoll extends JModelItem
 		}
 
 		return $answers;
-	}	
+	}
+
+	private function _generateCheckboxOwn($id_question, $question, $context)
+	{	
+		$answers = '';
+
+		if(isset($question['answers']))
+		{
+			$answers .= "<div class='cbo-answers'>";
+
+			foreach ($question['answers'] as $id => $answer) 
+			{
+				$answers .= "<label class='checkbox'>";
+				
+				if ($question['images'][$id] != '')
+				{
+					$answers .= "<img src=".JUri::base(true)."/".$question['images'][$id].">";
+				}							
+													
+				$answers .= "<input type='checkbox' name='cbo[".$id_question."][]' value=".$id.">".$answer."</label>";					
+			}
+
+			$answers .= "<label class='checkbox'><input type='checkbox' class='own-checkbox' name='cbo[".$id_question."][]' value='custom'>";
+
+			if (trim($question["name_own"]) != '')
+			{
+				$answers .= $question["name_own"];
+			}
+
+			$answers .="<input class='own-input' name='cbo[custom-".$id_question."]'";
+
+			if (trim($question["name_own"]) != '')
+			{
+				$answers .= "style='margin-left: 10px;'";
+			}
+
+			if ($context == 'component')
+			{	
+				$answers .= "type='text' placeholder='".JText::_('COM_MULTIPOLLS_OWN_ANSWER')."'></label>";		
+			}
+
+			elseif ($context == 'module')
+			{	
+				$answers .= "type='text' placeholder='".JText::_('MOD_MULTIPOLLS_OWN_ANSWER')."'></label>";		
+			}
+
+			$answers .= "</div>";
+		}
+
+		return $answers;
+	}
 }	

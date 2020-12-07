@@ -71,6 +71,10 @@ class MultipollsModelStat extends JModelLegacy
                     $return = $this->_getYnVotes($question['id']);
                     break;
 
+                case '8':
+                    $return = $this->_getCbOwnVotes($question['id']);
+                    break;    
+
                 default:                
                     break;
             }
@@ -113,6 +117,10 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;      
     }
 
+    //если польователь выбрал хотя бы один чекбокс в вопросе
+    //это считается за одное участие в этом вопросе
+    //результат одного чекбокса: это сколько раз выбрали чекбокс
+    //относительно общего количества участий в вопросе в процентах
     private function _getCbVotes($id_question)
     {
         $db = $this->getDbo();
@@ -351,6 +359,72 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;
     }
 
+    //если польователь выбрал хотя бы один чекбокс в вопросе
+    //это считается за одное участие в этом вопросе
+    //результат одного чекбокса: это сколько раз выбрали чекбокс
+    //относительно общего количества участий в вопросе в процентах
+    private function _getCbOwnVotes($id_question)
+    {
+        $db = $this->getDbo();
+       
+        $ids = $this->_getAnswers($id_question);
+
+        $query = $db->getQuery(true);
+        $query->select($db->quoteName('answers'));
+        $query->from($db->quoteName('#__multipolls_cb_own_votes'));     
+        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));                
+        $query->where($db->quoteName('own_answer') . ' = ' . $db->quote(''));                
+        $db->setQuery($query);
+        $votes = $db->loadColumn();      
+        
+        if(!empty($votes))
+        {
+            foreach ($votes as $key => $vote) 
+            {
+                $votes[$key] = explode(',' , $vote);
+            }
+
+            foreach ($ids as $key => $value) 
+            {
+                $sum = 0;
+
+                foreach ($votes as $vote) 
+                {
+                    if(in_array($value['id'], $vote))
+                    $sum ++;
+                }
+
+                $ids[$key]['count'] = $sum;
+                
+            }
+        } 
+
+        else
+        {
+            foreach ($ids as $key => $value) 
+            {                
+                $ids[$key]['count'] = 0;                
+            }
+        }
+        
+        $result['votes'] = $votes;
+        $result['names'] = $ids;
+
+        $query = $db->getQuery(true);               
+        $query->select($db->quoteName('own_answer'));      
+        $query->from($db->quoteName('#__multipolls_cb_own_votes'));       
+        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question)); 
+        $query->where($db->quoteName('own_answer') . ' <> ' . $db->quote(''));       
+        $query->order('id_vote');
+        $db->setQuery($query);
+        $textvotes = $db->loadColumn();
+
+        $result['textvotes'] = $textvotes;        
+
+        return $result;
+
+    }
+
     private function _getAnswers($id_question)
     {
         $db = $this->getDbo();
@@ -365,5 +439,183 @@ class MultipollsModelStat extends JModelLegacy
         $ids = $db->loadAssocList();
 
         return $ids;
+    }
+
+    public function clearResults($id_poll)
+    {   
+        $db = $this->getDbo();
+        $query = $db->getQuery(true); 
+
+        $query->select($db->quoteName(array('id')));
+        $query->from($db->quoteName('#__multipolls_questions'));
+        $query->where($db->quoteName('id_poll') . ' = ' . $db->quote($id_poll)); 
+        $db->setQuery($query);
+        $list_questions = $db->loadColumn();           
+
+        $db->transactionStart();
+ 
+        try {        
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_radio_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+           
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_cb_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_select_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_text_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_select_text_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_radio_own_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+            
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_yn_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+           
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_cb_own_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        $db->transactionCommit();
+
+        return true;
     }
 }

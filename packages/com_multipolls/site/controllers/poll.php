@@ -40,6 +40,7 @@ class MultipollsControllerPoll extends JControllerLegacy
 		$votes['sta-text'] = $jinput->get('sta-text', array(), 'ARRAY');
 		$votes['ro'] = $jinput->get('ro', array(), 'ARRAY');	
 		$votes['yn'] = $jinput->get('yn', array(), 'ARRAY');	
+		$votes['cbo'] = $jinput->get('cbo', array(), 'ARRAY');	
 
 		$model = $this->getModel('poll');  
 

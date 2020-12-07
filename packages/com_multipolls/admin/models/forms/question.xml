@@ -6,6 +6,12 @@
             type="text"
             default="0"
             label="JGLOBAL_FIELD_ID_LABEL"
+            readonly="true"/>
+
+        <field 
+            name="id_range"
+            type="text"
+            default="0"
             readonly="true"/>        
 
         <field
@@ -81,10 +87,20 @@
 
         <field 
             name="name_own"
-            type="text"            
-            label="COM_MULTIPOLLS_NAME_OWN"
-            description="COM_MULTIPOLLS_ANME_OWN_DESC"              
+            type="text"
             class="inputbox"
+            size="40"/>                             
+        />
+
+        <field 
+            name="range"
+            type="text"
+            label="COM_MULTIPOLLS_MAX_RANGE"
+            description="COM_MULTIPOLLS_MAX_RANGE_DESC"              
+            class="inputbox"
+            required="required"
+            filter="intval"
+            default="10"
             size="40"/>                             
         />
 

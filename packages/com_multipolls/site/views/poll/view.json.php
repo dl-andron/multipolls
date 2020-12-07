@@ -41,7 +41,10 @@ class MultipollsViewPoll extends JViewLegacy
 						break;	
 					case '7':
 						$result .= $this->_generateYnAnswers($question['votes']);
-						break;	
+						break;
+					case '8':
+						$result .= $this->_generateCheckboxOwnAnswers($question['votes']);
+						break;		
 					default:						
 						break;
 				}		
@@ -236,6 +239,32 @@ class MultipollsViewPoll extends JViewLegacy
 			}				
 
 			$res .=	'</tbody></table>';		
+		}
+
+		return $res;
+	}
+
+	private function _generateCheckboxOwnAnswers($votes)
+	{
+		$res = '';
+
+		if(!empty($votes)) {
+
+			$count_votes = count($votes['votes']);
+
+			foreach ($votes['names'] as $key => $name){			
+
+				$res .= '<table class="table table-bordered">';
+				$res .=	'<tbody>';	
+						
+				$percents = $name['count'] != 0 ? round($name['count']/$count_votes*100,2) : 0;
+						
+				$res .= '<tr>';
+				$res .=	'<td width="40%">'.$name['name'].'</td>';
+				$res .=	'<td><div class="progress"><div class="bar" style="width:'.$percents.'%"><div style="color:black">'.$name['count'].' - '.$percents.' %</div></div></div></td>';	
+				$res .= '</tr>';						
+				$res .=	'</tbody></table>';				
+			}
 		}
 
 		return $res;

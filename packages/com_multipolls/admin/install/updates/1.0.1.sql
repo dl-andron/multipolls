@@ -11,4 +11,4 @@ CREATE TABLE IF NOT EXISTS `#__multipolls_yn_votes` (
   KEY `id_answer` (`id_answer`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-INSERT IGNORE INTO `#__multipolls_type_questions`(`id`, `type`) VALUES (7, 'yes/no')
+INSERT IGNORE INTO `#__multipolls_type_questions`(`id`, `type`) VALUES (7, 'Да или Нет')

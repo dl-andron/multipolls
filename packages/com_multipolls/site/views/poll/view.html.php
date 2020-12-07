@@ -26,6 +26,10 @@ class MultipollsViewPoll extends JViewLegacy
 		{	
 			$this->result = $this->get('Stat');
 			$this->setLayout('show');
+
+			$this->state = $this->get('State');			
+			$this->show_result = $this->state->get('poll.show_result_after_vote');
+			
 			parent::display( $tpl );
 		}
 		else

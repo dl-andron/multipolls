@@ -42,8 +42,11 @@ JHtml::_('formbehavior.chosen', 'select');
 						<th style="min-width:100px" class="nowrap">
 							<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_TITLE', 'name', $listDirn, $listOrder); ?>
 						</th>
-						<th width="20%" class="nowrap center">
+						<th width="10%" class="nowrap center">
 							<?php echo JText::sprintf('COM_MULTIPOLLS_STAT'); ?>
+						</th>
+						<th width="10%" class="nowrap center">
+							<?php echo JText::sprintf('COM_MULTIPOLLS_CLEAR_STAT'); ?>
 						</th>
 						<th width="10%" class="nowrap hidden-phone">
 							<?php echo JHtml::_('searchtools.sort', 'JGLOBAL_CREATED', 'created' , $listDirn, $listOrder); ?>
@@ -81,7 +84,12 @@ JHtml::_('formbehavior.chosen', 'select');
 	            			<a class="btn btn-micro" href="<?php echo JRoute::_('index.php?option=com_multipolls&task=poll.show&id=' . $item->id); ?>">
 					            <span class="icon-list-view"></span>
 					        </a>
-	            		</td>	            			            		
+	            		</td>	
+	            		<td class="center">
+	            			<a href="<?php echo JRoute::_('index.php?option=com_multipolls&task=poll.clearResults&id=' . $item->id); ?>" onclick="if (!confirm('<?php echo JText::_('COM_MULTIPOLLS_CLEAR_STAT_CONFIRM')?>')) { return false;}" class="btn btn-micro">
+					            <span class="icon-remove"></span>
+					        </a>
+	            		</td>            			            		
 	            		<td class="nowrap small hidden-phone">
 							<?php
 								$date = $item->created;

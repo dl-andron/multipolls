@@ -16,12 +16,9 @@ class MultipollsControllerPoll extends JControllerForm
 
         $task = $this->getTask();
 
-        if ($id_poll = $model->store()) 
-        {
+        if ($id_poll = $model->store()) {
             $msg = JText::_( 'COM_MULTIPOLLS_SAVE_POLL' );
-        } 
-        else 
-        {
+        } else {
             JFactory::getApplication()->enqueueMessage( JText::_( 'COM_MULTIPOLLS_SAVE_POLL_ERROR'), 'error');
         }
 
@@ -55,5 +52,21 @@ class MultipollsControllerPoll extends JControllerForm
         $view->result = $poll_stat;       
 
         $view->showResult();       
+    }
+
+    public function clearResults()
+    {   
+        $jinput = JFactory::getApplication()->input;
+        $id_poll = $jinput->get('id', '', 'int');   
+
+        $link = 'index.php?option=com_multipolls&view=polls';
+
+        $model = $this->getModel('stat');
+
+        if ($model->clearResults($id_poll)){           
+            $this->setRedirect($link, JText::_( 'COM_MULTIPOLLS_CLEAR_STAT_CLEARED' ));
+        } else {
+            $this->setRedirect($link, $model->getError(), 'error');            
+        }        
     }
 }

@@ -46,6 +46,9 @@ JFactory::getDocument()->addScriptDeclaration('
 						case '7':
 							echo $this->loadTemplate('yn').'<hr>';
 							break;	
+						case '8':
+							echo $this->loadTemplate('cb_own').'<hr>';
+							break;	
 						default:						
 							break;
 					endswitch;

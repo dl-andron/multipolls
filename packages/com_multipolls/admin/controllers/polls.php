@@ -49,4 +49,20 @@ class MultipollsControllerPolls extends JControllerAdmin
         $link = 'index.php?option=com_multipolls&view=polls';
         $this->setRedirect($link, $msg);    
     }
+
+    public function delete()
+    {   
+        $jinput = JFactory::getApplication()->input; 
+        $ids  = $jinput->get('cid', array(), 'array');
+
+        $link = 'index.php?option=com_multipolls&view=polls';
+
+        $model = $this->getModel('polls');
+
+        if ($model->delete($ids)){           
+            $this->setRedirect($link, JText::_( 'COM_MULTIPOLLS_POLLS_DELETED' ));
+        } else {
+            $this->setRedirect($link, $model->getError(), 'error');            
+        }
+    }
 }

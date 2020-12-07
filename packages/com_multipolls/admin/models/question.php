@@ -17,7 +17,31 @@ class MultipollsModelQuestion extends JModelAdmin
 
     public function getItem( $id = null ) 
     {
-        return parent::getItem( $id );
+        $item =  parent::getItem( $id );
+
+        $range_row = $this->getSelectRangeRow($item->id);      
+
+        $item->id_range =  !empty($range_row['id']) ? $range_row['id'] : 0;
+        if(!empty($range_row['max_range'])){
+            $item->range = $range_row['max_range'];  
+        }     
+        
+        return $item;
+    }
+
+    private function getSelectRangeRow($id_question)
+    {
+        $db = $this->getDbo();
+        $query = $db->getQuery(true); 
+
+        $query->select('*');
+        $query->from($db->quoteName('#__multipolls_select_range'));
+        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));  
+
+        $db->setQuery($query);
+        $row = $db->loadAssoc();
+
+        return $row;
     }
 
     protected function loadFormData() 
@@ -31,6 +55,10 @@ class MultipollsModelQuestion extends JModelAdmin
     }
 
     public function getTable( $type = 'multipolls_questions', $prefix = 'Table', $config = array( ) ) {
+        return JTable::getInstance( $type, $prefix, $config );
+    }
+
+    public function getTableRange( $type = 'multipolls_select_range', $prefix = 'Table', $config = array( ) ) {
         return JTable::getInstance( $type, $prefix, $config );
     }
 
@@ -54,16 +82,35 @@ class MultipollsModelQuestion extends JModelAdmin
             $data['publish_up'] = JFactory::getDate($data['publish_up'])->toSql();            
         }          
 
-        if (!$row->bind($data)) 
-        {            
-            return false;
-        }
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);       
 
-        if (!$row->store()) 
-        {            
-            return false;
-        }     
-      
+        $db->transactionStart();
+
+        try {
+            $row->bind($data);
+            $row->store();
+
+            /*проверяю тип вопроса, если 3 или 5, то сохраняю 
+            в отдельную таблицу максимальное значение ранжирования*/
+            if(in_array($data['id_type'], array(3,5))){                
+                $range_data['id'] = $data['id_range'];
+                $range_data['id_question'] = $data['id'];
+                $range_data['max_range'] = $data['range'];
+
+                $range_row = $this->getTableRange();
+                
+                $range_row->bind($range_data);
+                $range_row->store();
+            }
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }    
+        
+        $db->transactionCommit();
+
         return $row->id;
     }
     

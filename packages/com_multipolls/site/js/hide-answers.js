@@ -21,7 +21,7 @@ jQuery(document).ready(function($)
 		}
 	});
 
-	$( ".own-input" ).focusin(function() {
+	$( ".ro-answers .own-input" ).focusin(function() {
 
 		var className = $(this).closest('.answers').next().attr("class");
 

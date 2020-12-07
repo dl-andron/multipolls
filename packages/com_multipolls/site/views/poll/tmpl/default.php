@@ -6,6 +6,7 @@ JHtml::_('jquery.framework');
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/own-radio.js');
+$document->addScript(JUri::root(true).'/components/com_multipolls/js/own-checkbox.js');
 
 if ($this->item->hide_answers && $this->item->allow_hidden_answers)
 {
