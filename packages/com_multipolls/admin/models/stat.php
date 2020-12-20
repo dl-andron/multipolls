@@ -177,25 +177,23 @@ class MultipollsModelStat extends JModelLegacy
         
         $ids = $this->_getAnswers($id_question);
 
-        $query = $db->getQuery(true);
-        $query->select($db->quoteName('id_answer'));
-        $query->select('AVG(value) as avg'); 
-        $query->from($db->quoteName('#__multipolls_select_votes'));        
-        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));        
-        $query->group($db->quoteName('id_answer'));
-        $db->setQuery($query);   
-        $votes  = $db->loadAssocList('id_answer'); 
+        foreach ($ids as $key => $id) {  
 
-        foreach ($ids as $key => $id)
-        {   
-            if(isset($votes[$id['id']]['avg']))
-            {
-                $ids[$key]['count'] = $votes[$id['id']]['avg'];
-            }
-            else
-            {
-                $ids[$key]['count'] = 0;
-            }
+			$query = $db->getQuery(true);	
+			$query->select($db->quoteName('value'));			 
+			$query->from($db->quoteName('#__multipolls_select_votes'));        
+			$query->where($db->quoteName('id_answer') . ' = ' . $db->quote($id['id'])); 
+			$db->setQuery($query);   
+			$votes  = $db->loadColumn();
+			
+			$counts = array_count_values($votes);
+            ksort($counts);
+            
+			if ($votes)	{
+				$ids[$key]['counts'] = $counts;
+			} else {
+				$ids[$key]['counts'] = '';
+			}
         }
 
         return $ids;
@@ -215,13 +213,17 @@ class MultipollsModelStat extends JModelLegacy
         $db->setQuery($query);   
         $votes  = $db->loadAssocList();
 
-        foreach ($ids as $key => $id) 
-        {
-            foreach ($votes as $vote) 
-            {  
-                if($id['id'] == $vote['id_answer'])
-                {
-                    $ids[$key]['answers'][] = $vote['text'];
+        //привожу к виду array([id_answer1] => array(text1,text2,text3...) [id_answer2] => array(text3,text4,text5...))
+        foreach($votes as $vote){
+            $arrIdAnswerText[$vote['id_answer']][] = $vote['text'];
+        }
+
+        foreach ($ids as $key => $id){
+            foreach ($arrIdAnswerText as $key_answer => $votes){ 
+                $counts = array_count_values($votes);
+		        arsort($counts); 
+                if($id['id'] == $key_answer){
+                    $ids[$key]['answers'] = $counts;
                 }               
             }
         }      
@@ -235,25 +237,23 @@ class MultipollsModelStat extends JModelLegacy
 
         $ids = $this->_getAnswers($id_question);
 
-        $query = $db->getQuery(true);
-        $query->select($db->quoteName('id_answer'));
-        $query->select('AVG(value) as avg'); 
-        $query->from($db->quoteName('#__multipolls_select_text_votes'));        
-        $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));        
-        $query->group($db->quoteName('id_answer'));
-        $db->setQuery($query);   
-        $votes  = $db->loadAssocList('id_answer'); 
+        foreach ($ids as $key => $id) {  
 
-        foreach ($ids as $key => $id)
-        {   
-            if(isset($votes[$id['id']]['avg']))
-            {
-                $ids[$key]['count'] = $votes[$id['id']]['avg'];
-            }
-            else
-            {
-                $ids[$key]['count'] = 0;
-            }
+			$query = $db->getQuery(true);	
+			$query->select($db->quoteName('value'));			 
+			$query->from($db->quoteName('#__multipolls_select_text_votes'));        
+			$query->where($db->quoteName('id_answer') . ' = ' . $db->quote($id['id'])); 
+			$db->setQuery($query);   
+			$votes  = $db->loadColumn();
+			
+			$counts = array_count_values($votes);
+            ksort($counts);
+            
+			if ($votes)	{
+				$ids[$key]['counts'] = $counts;
+			} else {
+				$ids[$key]['counts'] = '';
+			}
         }
 
         $query = $db->getQuery(true);             
@@ -264,13 +264,20 @@ class MultipollsModelStat extends JModelLegacy
         $db->setQuery($query);   
         $votes  = $db->loadAssocList();
 
-        foreach ($ids as $key => $id) 
-        {
-            foreach ($votes as $vote) 
-            {  
-                if($id['id'] == $vote['id_answer'] && trim($vote['text']) != '')
-                {
-                    $ids[$key]['answers'][] = $vote['text'];
+        //привожу к виду array([id_answer1] => array(text1,text2,text3...) [id_answer2] => array(text3,text4,text5...))
+        foreach($votes as $vote) {
+            if(trim($vote['text']) != ''){
+                $arrIdAnswerText[$vote['id_answer']][] = $vote['text'];
+            }            
+        }
+
+        foreach ($ids as $key => $id) {
+
+            foreach ($arrIdAnswerText as $key_answer => $votes){ 
+                $counts = array_count_values($votes);
+		        arsort($counts); 
+                if($id['id'] == $key_answer){
+                    $ids[$key]['answers'] = $counts;
                 }               
             }
         }   
@@ -359,10 +366,10 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;
     }
 
-    //если польователь выбрал хотя бы один чекбокс в вопросе
+    //если пользователь выбрал хотя бы один чекбокс в вопросе
     //это считается за одное участие в этом вопросе
-    //результат одного чекбокса: это сколько раз выбрали чекбокс
-    //относительно общего количества участий в вопросе в процентах
+    //результат одного чекбокса: это сколько раз в процентах выбрали чекбокс
+    //относительно общего количества участий в вопросе
     private function _getCbOwnVotes($id_question)
     {
         $db = $this->getDbo();

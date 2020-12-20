@@ -11,10 +11,10 @@ defined( '_JEXEC' ) or die;
 		<h4><?php echo $answer['name'] ?></h4>
 
 		<?php if(isset($answer['answers'])) :?>
-			<?php foreach ($answer['answers'] as $value) :?>
-			
-				<p><?php echo $value; ?></p>
-
+			<?php foreach ($answer['answers'] as $key => $value) :?>
+				<div>
+					<?php echo $key; ?> (<?php echo $value; ?>)<br>	
+				</div>
 			<?php endforeach; ?>
 		<?php endif; ?>	
 

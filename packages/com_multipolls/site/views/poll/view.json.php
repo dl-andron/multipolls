@@ -126,21 +126,30 @@ class MultipollsViewPoll extends JViewLegacy
 	{
 		$res = '';
 
-		if(!empty($votes))
-		{
+		if(!empty($votes)) {
 
 			$res .= '<table class="table table-bordered">';
 			$res .=	'<tbody>';
 			$res .=	'<tr>';
 			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_ANSWER').'</th>';
-			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_ANSWER').'</th>';
+			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_COUNT_VOTES_BY_VALUE').'</th>';
 			$res .=	'</tr>';
 
-			foreach ($votes as $answer)
-			{									
+			foreach ($votes as $answer) {				
+				$answerSum = array_sum($answer['counts']);
+
 				$res .=	'<tr>';
 				$res .=	'<td width="40%">'.$answer['name'].'</td>';					
-				$res .=	'<td>'.$answer['count'].'</td>';
+
+				$resultByAnswer = '';
+
+				foreach ($answer['counts'] as $selectedValue => $sumVotes) {
+					$percent = $sumVotes != 0 ? round($sumVotes/$answerSum*100,2) : 0;	
+					$resultByAnswer .= '<div>'.$selectedValue.' - '.$sumVotes." (".$percent."%)</div>";					
+				}
+
+				$res .=	'<td>'.$resultByAnswer.'</td>';
+
 				$res .=	'</tr>';					
 			}
 
@@ -162,15 +171,25 @@ class MultipollsViewPoll extends JViewLegacy
 			$res .=	'<tbody>';
 			$res .=	'<tr>';
 			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_ANSWER').'</th>';
-			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_ANSWER').'</th>';
+			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_COUNT_VOTES_BY_VALUE').'</th>';
 			$res .=	'</tr>';
 
-			foreach ($votes as $answer)
-			{
+			foreach ($votes as $answer) {				
+				$answerSum = array_sum($answer['counts']);
+
 				$res .=	'<tr>';
 				$res .=	'<td width="40%">'.$answer['name'].'</td>';					
-				$res .=	'<td>'.$answer['count'].'</td>';
-				$res .=	'</tr>';						
+
+				$resultByAnswer = '';
+
+				foreach ($answer['counts'] as $selectedValue => $sumVotes) {
+					$percent = $sumVotes != 0 ? round($sumVotes/$answerSum*100,2) : 0;	
+					$resultByAnswer .= '<div>'.$selectedValue.' - '.$sumVotes." (".$percent."%)</div>";					
+				}
+
+				$res .=	'<td>'.$resultByAnswer.'</td>';
+
+				$res .=	'</tr>';					
 			}
 
 			$res .=	'</tbody></table>';
