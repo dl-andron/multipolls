@@ -543,6 +543,8 @@ class MultipollsModelPoll extends JModelItem
 			}
 		}	
 		
+		$query = $db->getQuery(true);
+		
 		if(!empty($data->votes['priority']))
 		{
 			try

@@ -196,7 +196,7 @@ class MultipollsModelStat extends JModelLegacy
 			if ($votes)	{
 				$ids[$key]['counts'] = $counts;
 			} else {
-				$ids[$key]['counts'] = '';
+				$ids[$key]['counts'] = array();
 			}
         }
 
@@ -216,6 +216,8 @@ class MultipollsModelStat extends JModelLegacy
         $query->where($db->quoteName('id_question') . ' = ' . $db->quote($id_question));               
         $db->setQuery($query);   
         $votes  = $db->loadAssocList();
+
+        $arrIdAnswerText = array();
 
         //привожу к виду array([id_answer1] => array(text1,text2,text3...) [id_answer2] => array(text3,text4,text5...))
         foreach($votes as $vote){
@@ -256,7 +258,7 @@ class MultipollsModelStat extends JModelLegacy
 			if ($votes)	{
 				$ids[$key]['counts'] = $counts;
 			} else {
-				$ids[$key]['counts'] = '';
+				$ids[$key]['counts'] = array();
 			}
         }
 
@@ -268,6 +270,8 @@ class MultipollsModelStat extends JModelLegacy
         $db->setQuery($query);   
         $votes  = $db->loadAssocList();
 
+        $arrIdAnswerText = array();
+        
         //привожу к виду array([id_answer1] => array(text1,text2,text3...) [id_answer2] => array(text3,text4,text5...))
         foreach($votes as $vote) {
             if(trim($vote['text']) != ''){
@@ -457,7 +461,7 @@ class MultipollsModelStat extends JModelLegacy
 			if ($votes)	{
 				$ids[$key]['counts'] = $counts;
 			} else {
-				$ids[$key]['counts'] = '';
+				$ids[$key]['counts'] = array();
 			}
         }
 
@@ -642,6 +646,26 @@ class MultipollsModelStat extends JModelLegacy
             );
 
             $query->delete($db->quoteName('#__multipolls_cb_own_votes'));
+            $query->where($conditions);
+
+            $db->setQuery($query);
+            $db->execute();
+
+        } catch (Exception $e) {   
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;           
+        }
+
+        try {         
+           
+            $query = $db->getQuery(true);
+            
+            $conditions = array(
+                $db->quoteName('id_question') . 'IN (' . implode(',', $db->quote($list_questions)) . ')'
+            );
+
+            $query->delete($db->quoteName('#__multipolls_priority_votes'));
             $query->where($conditions);
 
             $db->setQuery($query);
