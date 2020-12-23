@@ -171,7 +171,7 @@ class MultipollsModelPoll extends JModelItem
         return !empty($range) ? $range : 10;
 	}
 
-	//метод проверяет наличие ответов на вопросы с radio-button
+	//метод проверяет наличие ответов на вопросы
 	public function checkQuestions($id_poll, $votes)
 	{			
 		try
@@ -541,7 +541,36 @@ class MultipollsModelPoll extends JModelItem
 				$this->setError($e->getMessage());
 				return false;		    
 			}
-		}		
+		}	
+		
+		if(!empty($data->votes['priority']))
+		{
+			try
+			{					
+				$columns = array('id_question', 'id_answer', 'value', 'ip', 'user_agent', 'date_voting');				
+				$query->insert($db->quoteName('#__multipolls_priority_votes'));
+				$query->columns($db->quoteName($columns));		
+
+				foreach ($data->votes['priority'] as $id_question => $vote) {
+					$i = 1; //приоритет по порядку
+					foreach($vote as $id_answer){
+				    	$rows = array($db->quote($id_question), $db->quote($id_answer), $db->quote($i) ,$db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+						$query->values(implode(',', $rows));	
+						$i++;
+					}	       
+				}
+			
+			    $db->setQuery($query);
+				$db->execute();
+			}
+
+			catch (Exception $e)
+			{	
+				$db->transactionRollback();
+				$this->setError($e->getMessage());
+				return false;		    
+			}
+		}
 
 		$db->transactionCommit();
 
@@ -602,6 +631,10 @@ class MultipollsModelPoll extends JModelItem
 			case '8':
 				$result .= $this->_generateCheckboxOwn($id_question, $question, $context);
 				break;	
+			
+			case '9':
+				$result .= $this->_generatePriority($id_question, $question);
+				break;
 
 			default:				
 				break;
@@ -911,6 +944,32 @@ class MultipollsModelPoll extends JModelItem
 			}
 
 			$answers .= "</div>";
+		}
+
+		return $answers;
+	}
+
+	private function _generatePriority($id_question, $question)
+	{
+		$answers = '';
+
+		if(isset($question['answers'])) {
+			$answers .= "<div class='pr-answers'>";
+			$answers .= "<ul class='priority-list'>";
+
+			foreach ($question['answers'] as $id => $answer) {				
+				$answers .= "<li>";
+
+				if ($question['images'][$id] != '') {
+					$answers .= "<img src=".JUri::base(true)."/".$question['images'][$id].">";
+				}						
+													
+				$answers .= $answer;
+				$answers .= "<input type='hidden' name='priority[".$id_question."][]' value=".$id.">";	
+				$answers .= "</li>";				
+			}
+
+			$answers .= "</ol></div>";
 		}
 
 		return $answers;

@@ -12,3 +12,4 @@ DROP TABLE IF EXISTS `#__multipolls_select_text_votes`;
 DROP TABLE IF EXISTS `#__multipolls_yn_votes`;
 DROP TABLE IF EXISTS `#__multipolls_select_range`;
 DROP TABLE IF EXISTS `#__multipolls_cb_own_votes`;
+DROP TABLE IF EXISTS `#__multipolls_priority_votes`;

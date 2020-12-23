@@ -48,7 +48,10 @@ JFactory::getDocument()->addScriptDeclaration('
 							break;	
 						case '8':
 							echo $this->loadTemplate('cb_own').'<hr>';
-							break;	
+							break;
+						case '9':
+							echo $this->loadTemplate('priority').'<hr>';
+							break;		
 						default:						
 							break;
 					endswitch;

@@ -2,7 +2,7 @@
 <extension type="module" version="3.1" client="site" method="upgrade">
 	<name>MOD_MULTIPOLLS</name>	
 	<author>A.Lipnitski</author>
-	<creationDate>August 2019</creationDate>
+	<creationDate>December 2020</creationDate>
 	<copyright></copyright>	
 	<license></license>
 	<version>1.0.3</version>	

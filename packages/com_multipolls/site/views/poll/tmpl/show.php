@@ -42,6 +42,9 @@ $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 						case '8':
 							echo $this->loadTemplate('cb_own');
 							break;	
+						case '9':
+							echo $this->loadTemplate('priority');
+							break;	
 						default:						
 							break;
 					endswitch;

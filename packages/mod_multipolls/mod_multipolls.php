@@ -13,7 +13,7 @@ if (!file_exists(JPATH_SITE.'/components/com_multipolls/multipolls.php'))
 require_once __DIR__ . '/helper.php';
 require_once JPATH_BASE.'/components/com_multipolls/captcha/generate.php';
 
-JHtml::_('jquery.framework');
+JHtml::_('jquery.ui', array('core', 'sortable'));
 
 $doc = JFactory::getDocument();
 
@@ -54,6 +54,7 @@ if(!empty($post_id_poll) && !$check_cookie)
 	$votes['ro'] = $app->input->get('ro', array(), 'ARRAY');
 	$votes['yn'] = $app->input->get('yn', array(), 'ARRAY');
 	$votes['cbo'] = $app->input->get('cbo', array(), 'ARRAY');		
+	$votes['priority'] = $app->input->get('priority', array(), 'ARRAY');		
 	
 	JModelLegacy::addIncludePath(JPATH_SITE .'/components/com_multipolls/models');	
 	$model = JModelLegacy::getInstance('Poll', 'MultipollsModel');
@@ -98,6 +99,7 @@ else
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/submit.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-checkbox.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/priority.js');
 
 	if($res_button)
 	{

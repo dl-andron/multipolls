@@ -45,7 +45,10 @@ $show_result = $params->get("show_result_after_vote");
 								break;
 							case '8':							
 								require JModuleHelper::getLayoutPath('mod_multipolls', $params->get('layout', 'show_cb_own'));
-								break;			
+								break;
+							case '9':							
+								require JModuleHelper::getLayoutPath('mod_multipolls', $params->get('layout', 'show_priority'));
+								break;				
 							default:						
 								break;
 							endswitch;

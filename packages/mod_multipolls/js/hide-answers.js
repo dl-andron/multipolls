@@ -6,12 +6,9 @@ jQuery(document).ready(function($)
 			
 			var className = $(this).closest('.answers').next().attr("class");
 
-			if(className == 'answers')
-			{
+			if(className == 'answers') {
 				$(this).closest('.answers').next().show();
-			}
-			else if(className="poll-button")
-			{
+			} else {
 				$(this).closest('.multipoll').find('.poll-button input[type="submit"]').attr('disabled', false);
 			}
 		}
@@ -21,12 +18,9 @@ jQuery(document).ready(function($)
 
 		var className = $(this).closest('.answers').next().attr("class");
 
-		if(className == 'answers')
-		{
+		if(className == 'answers') {
 			$(this).closest('.answers').next().show();
-		}
-		else if(className="poll-button")
-		{
+		} else {
 			$(this).closest('.multipoll').find('.poll-button input[type="submit"]').attr('disabled', false);
 		}
 	

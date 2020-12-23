@@ -41,8 +41,9 @@ class MultipollsControllerPoll extends JControllerLegacy
 		$votes['ro'] = $jinput->get('ro', array(), 'ARRAY');	
 		$votes['yn'] = $jinput->get('yn', array(), 'ARRAY');	
 		$votes['cbo'] = $jinput->get('cbo', array(), 'ARRAY');	
+		$votes['priority'] = $jinput->get('priority', array(), 'ARRAY');
 
-		$model = $this->getModel('poll');  
+		$model = $this->getModel('poll');
 
 		if(!$model->checkQuestions($id_poll, $votes))
 		{			

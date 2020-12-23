@@ -47,7 +47,10 @@ class modMultipollsHelper
 							break;	
 						case '8':							
 							require JModuleHelper::getLayoutPath('mod_multipolls', 'show_cb_own');
-							break;		
+							break;
+						case '9':							
+							require JModuleHelper::getLayoutPath('mod_multipolls', 'show_priority');
+							break;			
 						default:						
 							break;
 				}

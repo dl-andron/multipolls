@@ -2,7 +2,7 @@
 <extension type="package" version="2.5" method="upgrade">
 	<name>Multipolls Package</name>
 	<author>A.Lipnitski</author>
-	<creationDate>November 2020</creationDate>
+	<creationDate>December 2020</creationDate>
  	<packagename>multipolls</packagename>
 	 <version>1.0.3</version>	 
 	 <packager>A.Lipnitski</packager>	

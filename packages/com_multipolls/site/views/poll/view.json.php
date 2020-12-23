@@ -44,7 +44,10 @@ class MultipollsViewPoll extends JViewLegacy
 						break;
 					case '8':
 						$result .= $this->_generateCheckboxOwnAnswers($question['votes']);
-						break;		
+						break;	
+					case '9':
+						$result .= $this->_generatePriorityAnswers($question['votes']);
+						break;			
 					default:						
 						break;
 				}		
@@ -284,6 +287,44 @@ class MultipollsViewPoll extends JViewLegacy
 				$res .= '</tr>';						
 				$res .=	'</tbody></table>';				
 			}
+		}
+
+		return $res;
+	}
+
+	private function _generatePriorityAnswers($votes)
+	{
+		$res = '';
+
+		if(!empty($votes)) {
+
+			$res .= '<table class="table table-bordered">';
+			$res .=	'<tbody>';
+			$res .=	'<tr>';
+			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_ANSWER').'</th>';
+			$res .=	'<th>'.JText::_('COM_MULTIPOLLS_COUNT_VOTES_BY_PRIORITY').'</th>';
+			$res .=	'</tr>';
+
+			foreach ($votes as $answer) {				
+				$answerSum = array_sum($answer['counts']);
+
+				$res .=	'<tr>';
+				$res .=	'<td width="40%">'.$answer['name'].'</td>';					
+
+				$resultByAnswer = '';
+
+				foreach ($answer['counts'] as $selectedPriority => $sumVotes) {
+					$percent = $sumVotes != 0 ? round($sumVotes/$answerSum*100,2) : 0;	
+					$resultByAnswer .= '<div>'.$selectedPriority.' - '.$sumVotes." (".$percent."%)</div>";					
+				}
+
+				$res .=	'<td>'.$resultByAnswer.'</td>';
+
+				$res .=	'</tr>';					
+			}
+
+			$res .=	'</tbody></table>';
+		
 		}
 
 		return $res;

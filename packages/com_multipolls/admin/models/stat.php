@@ -73,6 +73,10 @@ class MultipollsModelStat extends JModelLegacy
 
                 case '8':
                     $return = $this->_getCbOwnVotes($question['id']);
+                    break;
+                    
+                case '9':
+                    $return = $this->_getPriorityVotes($question['id']);
                     break;    
 
                 default:                
@@ -432,6 +436,34 @@ class MultipollsModelStat extends JModelLegacy
 
     }
 
+    private function _getPriorityVotes($id_question)
+    {
+        $db = $this->getDbo();        
+        
+        $ids = $this->_getAnswers($id_question);
+
+        foreach ($ids as $key => $id) {  
+
+			$query = $db->getQuery(true);	
+			$query->select($db->quoteName('value'));			 
+			$query->from($db->quoteName('#__multipolls_priority_votes'));        
+			$query->where($db->quoteName('id_answer') . ' = ' . $db->quote($id['id'])); 
+			$db->setQuery($query);   
+			$votes  = $db->loadColumn();
+			
+			$counts = array_count_values($votes);
+            ksort($counts);
+            
+			if ($votes)	{
+				$ids[$key]['counts'] = $counts;
+			} else {
+				$ids[$key]['counts'] = '';
+			}
+        }
+
+        return $ids;
+    }
+
     private function _getAnswers($id_question)
     {
         $db = $this->getDbo();
@@ -446,7 +478,7 @@ class MultipollsModelStat extends JModelLegacy
         $ids = $db->loadAssocList();
 
         return $ids;
-    }
+    }    
 
     public function clearResults($id_poll)
     {   
