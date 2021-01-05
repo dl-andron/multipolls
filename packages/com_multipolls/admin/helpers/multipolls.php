@@ -80,21 +80,21 @@ class MultipollsHelper
             $checkedlanguage[] = $lang->lang_code;
             if (!in_array($lang->lang_code, $pollsLangsTag))
             {                
-                $query='ALTER TABLE `#__multipolls_polls` ADD `name_'.$lang->lang_code.'` varchar(128) NOT NULL, ADD `text_'.$lang->lang_code.'` text NOT NULL';
+                $query='ALTER TABLE `#__multipolls_polls` ADD `name_'.$lang->lang_code.'` varchar(500) NOT NULL, ADD `text_'.$lang->lang_code.'` text NOT NULL';
                 $db->setQuery($query);
                 if (!$db->query())
                 {
                     JError::raiseWarning(500, "Error install new languages:<br>".$db->getErrorMsg());            
                 }
 
-                $query='ALTER TABLE `#__multipolls_questions` ADD `name_'.$lang->lang_code.'` varchar(128) NOT NULL, ADD `name_own_'.$lang->lang_code.'` varchar(128)';
+                $query='ALTER TABLE `#__multipolls_questions` ADD `name_'.$lang->lang_code.'` varchar(500) NOT NULL, ADD `name_own_'.$lang->lang_code.'` varchar(300)';
                 $db->setQuery($query);
                 if (!$db->query())
                 {
                     JError::raiseWarning(500, "Error install new languages:<br>".$db->getErrorMsg());            
                 }
 
-                $query='ALTER TABLE `#__multipolls_answers` ADD `name_'.$lang->lang_code.'` varchar(128) NOT NULL';
+                $query='ALTER TABLE `#__multipolls_answers` ADD `name_'.$lang->lang_code.'` varchar(500) NOT NULL';
                 $db->setQuery($query);
                 if (!$db->query())
                 {
