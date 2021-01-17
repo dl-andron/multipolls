@@ -2,6 +2,8 @@
 
 defined( '_JEXEC' ) or die;
 
+JHtml::_('behavior.keepalive');
+
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 
