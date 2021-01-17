@@ -56,6 +56,12 @@ $show_result = $params->get("show_result_after_vote");
 					
 			<?php endforeach; ?>
 		<?php else :?>
-			<?php echo JText::_('MOD_MULTIPOLLS_ALREADY_VOTED'); ?>
+			<?php
+				$app = JFactory::getApplication();
+				$system_message=$app->getMessageQueue();
+				
+				$message = !empty($system_message[0]["message"]) ? JText::_('MOD_MULTIPOLLS_THANKS') : JText::_('MOD_MULTIPOLLS_ALREADY_VOTED');
+			?>
+			<?php echo $message; ?>
 		<?php endif; ?>
 </div>

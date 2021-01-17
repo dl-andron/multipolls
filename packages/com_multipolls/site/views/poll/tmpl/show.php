@@ -3,7 +3,7 @@
 defined( '_JEXEC' ) or die;
 
 $document = JFactory::getDocument();
-$document->addStyleSheet('components/com_multipolls/css/multipolls.css');
+$document->addStyleSheet('components/com_multipolls/css/multipolls.css');	
 
 ?>
 
@@ -51,8 +51,14 @@ $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
 				?>		
 					
 			<?php endforeach; ?>
-	<?php else :?>
-		<?php echo JText::_('COM_MULTIPOLLS_ALREADY_VOTED'); ?>
+	<?php else :?>		
+		<?php
+			$app = JFactory::getApplication();
+			$system_message=$app->getMessageQueue();
+			
+			$message = !empty($system_message[0]["message"]) ? JText::_('COM_MULTIPOLLS_THANKS') : JText::_('COM_MULTIPOLLS_ALREADY_VOTED');
+		?>
+		<?php echo $message; ?>
 	<?php endif; ?>	
 
 </div>	
