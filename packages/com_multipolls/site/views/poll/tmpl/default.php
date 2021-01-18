@@ -1,10 +1,14 @@
 <?php
 
 defined( '_JEXEC' ) or die; // No direct access
+
 JHtml::_('jquery.ui', array('core', 'sortable'));
+JHtml::_('behavior.keepalive');
 
 $document = JFactory::getDocument();
 $document->addStyleSheet('components/com_multipolls/css/multipolls.css');
+$document->addScript(JUri::root(true).'/components/com_multipolls/js/jquery.session.js');
+$document->addScript(JUri::root(true).'/components/com_multipolls/js/save-inputs.js');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/own-radio.js');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/own-checkbox.js');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/priority.js');

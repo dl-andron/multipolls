@@ -96,6 +96,8 @@ else
 	$show_text = $params->get('show_text' , '1');
 	$hide_answers = $params->get('hide_answers' , '0');	
 
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/jquery.session.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/save-inputs.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/submit.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-checkbox.js');
