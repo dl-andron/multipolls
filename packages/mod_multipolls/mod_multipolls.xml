@@ -5,7 +5,7 @@
 	<creationDate>December 2020</creationDate>
 	<copyright></copyright>	
 	<license></license>
-	<version>1.0.3</version>	
+	<version>1.1</version>	
 	<description>MOD_MULTIPOLLS_XML_DESCRIPTION</description>
 	<files>
 		<filename module="mod_multipolls">mod_multipolls.php</filename>

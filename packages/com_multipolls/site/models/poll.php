@@ -80,6 +80,7 @@ class MultipollsModelPoll extends JModelItem
 			$query->select($db->quoteName('img_url', 'q_image'));		
 			$query->select($db->quoteName('id', 'qid'));
 			$query->select($db->quoteName('id_type'));
+			$query->select($db->quoteName('required'));
 			$query->select($db->quoteName('name_own_'.$cur_lang, 'name_own'));	
 			$query->select($db->quoteName('name_'.$cur_lang, 'q_name'));	       	        
 	        $query->from($db->quoteName('#__multipolls_questions'));	       	       
@@ -116,6 +117,7 @@ class MultipollsModelPoll extends JModelItem
 	        	$data->poll_content[$q['qid']]['q_image'] = $q['q_image'];
 	        	$data->poll_content[$q['qid']]['id_type'] = $q['id_type'];	
 	        	$data->poll_content[$q['qid']]['name_own'] = $q['name_own']; 
+	        	$data->poll_content[$q['qid']]['required'] = $q['required']; 
 
 	        	if(!in_array($q['id_type'], array(1,6,7)))
 	        	{
@@ -593,7 +595,13 @@ class MultipollsModelPoll extends JModelItem
 
 	public function generateQuestion($id_question, $question, $context = 'component')
 	{	
-		$result = "<div class='answers'><h4>".$question['q_name']."</h4>";		
+		$result = "<div class='answers'><h4>".$question['q_name'];
+
+		if($question['required']){
+			$result .= "<span style='color:#ff0000;font-size:9px;vertical-align:top;'> *</span>";
+		}
+		
+		$result .= "</h4>";		
 
 		if ($question['q_image'] !='') 
 		{
@@ -607,7 +615,7 @@ class MultipollsModelPoll extends JModelItem
 				break;
 
 			case '2':
-				$result .= $this->_generateCheckbox($id_question, $question);
+				$result .= $this->_generateCheckbox($id_question, $question, $context);
 				break;
 
 			case '3':
@@ -664,7 +672,13 @@ class MultipollsModelPoll extends JModelItem
 					$answers .= "<img src=".JUri::base(true)."/".$question['images'][$id].">";
 				}							
 													
-				$answers .= "<input type='radio' name='r[".$id_question."]' value=".$id." required>".$answer."</label>";					
+				$answers .= "<input type='radio' name='r[".$id_question."]' value=".$id." ";
+				
+				if($question['required']) {
+					$answers .= "required";
+				}
+
+				$answers .= ">".$answer."</label>";					
 			}
 
 			$answers .= "</div>";		
@@ -673,13 +687,32 @@ class MultipollsModelPoll extends JModelItem
 		return $answers;
 	}
 
-	private function _generateCheckbox($id_question, $question)
+	private function _generateCheckbox($id_question, $question, $context)
 	{	
 		$answers = '';
 
 		if(isset($question['answers']))
 		{
-			$answers .= "<div class='cb-answers'>";
+			$answers .= "<div class='cb-answers";
+
+			if($question['required']) {
+				$answers .= " required";
+			}
+
+			$answers .= "'>";
+
+			//сообщение об неудачной валидации			
+
+			if ($context == 'component')
+			{	
+				$answers .= "<input class='valid-error' type='hidden' value='".JText::_('COM_MULTIPOLLS_VALID_ERROR_NO_ANSWERS')."'>";		
+			}
+
+			elseif ($context == 'module')
+			{	
+				$answers .= "<input class='valid-error' type='hidden' value='".JText::_('MOD_MULTIPOLLS_VALID_ERROR_NO_ANSWERS')."'>";		
+			}
+			//------------------------------
 
 			foreach ($question['answers'] as $id => $answer) 
 			{
@@ -690,7 +723,7 @@ class MultipollsModelPoll extends JModelItem
 					$answers .= "<img src=".JUri::base(true)."/".$question['images'][$id].">";
 				}							
 													
-				$answers .= "<input type='checkbox' name='cb[".$id_question."][]' value=".$id.">".$answer."</label>";					
+				$answers .= "<input type='checkbox' name='cb[".$id_question."][]' value=".$id.">".$answer."</label>";	
 			}
 
 			$answers .= "</div>";
@@ -752,7 +785,13 @@ class MultipollsModelPoll extends JModelItem
 
 				$answers .= "<p>".$answer."</p>";															
 			
-				$answers .= "<textarea name='ta[".$id_question."-".$id."]'></textarea>";					
+				$answers .= "<textarea name='ta[".$id_question."-".$id."]'";
+				
+				if($question['required']) {
+					$answers .= " required";
+				}
+
+				$answers .= "></textarea>";
 			}
 
 			$answers .= "</div>";
@@ -788,9 +827,15 @@ class MultipollsModelPoll extends JModelItem
 					$answers .= "<option>".$i."</option>";
 				}
 
-				$answers .= "</select>";
+				$answers .= "</select>";				
 
-				$answers .= "<textarea name='sta-text[".$id_question."-".$id."]'></textarea>";
+				$answers .= "<textarea name='sta-text[".$id_question."-".$id."]'";
+				
+				if($question['required']) {
+					$answers .= " required";
+				}
+
+				$answers .= "></textarea>";
 			}
 
 			$answers .= "</div>";	
@@ -814,12 +859,24 @@ class MultipollsModelPoll extends JModelItem
 				if ($question['images'][$id] != '')
 				{
 					$answers .= "<img src=".JUri::base(true)."/".$question['images'][$id].">";
-				}							
-													
-				$answers .= "<input type='radio' name='ro[".$id_question."]' value=".$id." required>".$answer."</label>";					
+				}	
+				
+				$answers .= "<input type='radio' name='ro[".$id_question."]' value=".$id." ";
+				
+				if($question['required']) {
+					$answers .= "required";
+				}
+
+				$answers .= ">".$answer."</label>";	
 			}
 
-			$answers .= "<label class='radio'><input type='radio' class='own-radio' name='ro[".$id_question."]' value='custom' required>";
+			$answers .= "<label class='radio'><input type='radio' class='own-radio' name='ro[".$id_question."]' value='custom' ";
+
+			if($question['required']) {
+				$answers .= "required";
+			}
+
+			$answers .= ">";
 
 			if (trim($question["name_own"]) != '')
 			{
@@ -866,7 +923,13 @@ class MultipollsModelPoll extends JModelItem
 
 				$answers .=	"<label for='select".$id."'>".$answer."</label>";				
 
-				$answers .= "<label style='width: 50px;display: inline-block;' ><input type='radio' name='yn[".$id_question."-".$id."]' value='y' required> ";
+				$answers .= "<label style='width: 50px;display: inline-block;' ><input type='radio' name='yn[".$id_question."-".$id."]' value='y'";
+				
+				if($question['required']) {
+					$answers .= " required";
+				}
+				
+				$answers .= "> ";	
 
 				if($context == 'component')
 				{
@@ -880,7 +943,12 @@ class MultipollsModelPoll extends JModelItem
 
 				$answers .=  "</label>"; 
 
-				$answers .= "<label style='width: 50px;display: inline-block;' ><input type='radio' name='yn[".$id_question."-".$id."]' value='n' required> ";
+				$answers .= "<label style='width: 50px;display: inline-block;' ><input type='radio' name='yn[".$id_question."-".$id."]' value='n'";
+
+				if($question['required']) {
+					$answers .= " required";
+				}
+				$answers .= "> ";
 
 				if ($context == 'component')
 				{
@@ -906,8 +974,27 @@ class MultipollsModelPoll extends JModelItem
 		$answers = '';
 
 		if(isset($question['answers']))
-		{
-			$answers .= "<div class='cbo-answers'>";
+		{			
+			$answers .= "<div class='cbo-answers";
+
+			if($question['required']) {
+				$answers .= " required";
+			}
+
+			$answers .= "'>";
+
+			//сообщение об неудачной валидации			
+
+			if ($context == 'component')
+			{	
+				$answers .= "<input class='valid-error' type='hidden' value='".JText::_('COM_MULTIPOLLS_VALID_ERROR_NO_ANSWERS')."'>";		
+			}
+
+			elseif ($context == 'module')
+			{	
+				$answers .= "<input class='valid-error' type='hidden' value='".JText::_('MOD_MULTIPOLLS_VALID_ERROR_NO_ANSWERS')."'>";		
+			}
+			//------------------------------
 
 			foreach ($question['answers'] as $id => $answer) 
 			{

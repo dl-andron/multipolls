@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `#__multipolls_questions` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_poll` int(10) unsigned NOT NULL, 
   `id_type` int(10) NOT NULL, 
+  `required` TINYINT(1) NOT NULL DEFAULT '1', 
   `published` tinyint(1) NOT NULL,
   `publish_up` datetime NOT NULL,
   `publish_down` datetime NOT NULL,

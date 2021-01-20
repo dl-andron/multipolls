@@ -86,6 +86,17 @@
         /> 
 
         <field 
+            name="required" 
+            type="radio" 
+            default="1" 
+            label="COM_MULTIPOLLS_REQUIRED" 
+            description="COM_MULTIPOLLS_REQUIRED_DESCRIPTION" 
+            class="btn-group btn-group-yesno">
+            <option value="1">JYES</option>
+            <option value="0">JNO</option>
+        </field>
+
+        <field 
             name="name_own"
             type="text"
             class="inputbox"

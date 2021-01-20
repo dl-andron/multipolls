@@ -69,17 +69,17 @@ class MultipollsModelQuestion extends JModelAdmin
         $input = JFactory::getApplication()->input;
         $data = $input->get('jform', array(), 'ARRAY');  
 
-        $data['created'] = empty($data['created']) ? JFactory::getDate('now')->toSql() : JFactory::getDate($data['created'])->toSql();
-        $data['publish_down'] = empty($data['publish_down']) ? $this->getDbo()->getNullDate() : JFactory::getDate($data['publish_down'])->toSql();         
+        $data['created'] = empty($data['created']) ? JFactory::getDate('now')->toSql() : JFactory::getDate($data['created'], 'Europe/Minsk')->toSql();
+        $data['publish_down'] = empty($data['publish_down']) ? $this->getDbo()->getNullDate() : JFactory::getDate($data['publish_down'], 'Europe/Minsk')->toSql();         
 
         if ($data['published'] == 1 && (int)$data['publish_up'] == 0)
         {  
-            $data['publish_up'] = JFactory::getDate('now')->toSql();
+            $data['publish_up'] = JFactory::getDate('now', 'Europe/Minsk')->toSql();
         }
 
         elseif ((int)$data['publish_up'] != 0)
         {
-            $data['publish_up'] = JFactory::getDate($data['publish_up'])->toSql();            
+            $data['publish_up'] = JFactory::getDate($data['publish_up'], 'Europe/Minsk')->toSql();            
         }          
 
         $db = $this->getDbo();

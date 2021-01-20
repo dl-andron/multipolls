@@ -12,6 +12,7 @@ $document->addScript(JUri::root(true).'/components/com_multipolls/js/save-inputs
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/own-radio.js');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/own-checkbox.js');
 $document->addScript(JUri::root(true).'/components/com_multipolls/js/priority.js');
+$document->addScript(JUri::root(true).'/components/com_multipolls/js/validation.js');
 
 if ($this->item->hide_answers && $this->item->allow_hidden_answers)
 {

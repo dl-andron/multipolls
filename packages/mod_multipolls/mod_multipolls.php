@@ -102,6 +102,7 @@ else
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-radio.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/own-checkbox.js');
 	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/priority.js');
+	$doc->addScript(JUri::root(true).'/modules/mod_multipolls/js/validation.js');
 
 	if($res_button)
 	{
