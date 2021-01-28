@@ -8,7 +8,8 @@ INSERT INTO `#__multipolls_type_questions` (`id`, `type`) VALUES
 (5, 'Цифра по шкале и ввод текста'),
 (6, 'Один вариант либо свой'),
 (7, 'Да или Нет'),
-(8, 'Несколько вариантов и свой');
+(8, 'Несколько вариантов и свой'),
+(9, 'Выбор по приоритету');
 
 CREATE TABLE IF NOT EXISTS `#__multipolls_select_range` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
