@@ -141,8 +141,13 @@ jQuery(document).ready(function($)
             $.session.set(el_name,el_value);
         });	
         el.addEventListener("focusin", function() {		
-            el_name2=$(el).prev('.own-checkbox').attr("name");
-            el_value2=$(el).prev('.own-checkbox').val();		
+            el_name2=$(el).prev('.own-checkbox').attr("name"); 
+            if ($.session.get(el_name2)) 
+            {
+                el_value2=$.session.get(el_name2).split(",");  
+                el_value2.push($(el).prev('.own-checkbox').val());              							
+            }
+
             $.session.set(el_name2,el_value2);
         });
     });
