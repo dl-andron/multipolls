@@ -45,14 +45,18 @@ class MultipollsControllerPoll extends JControllerLegacy
 
 		$model = $this->getModel('poll');
 
-		if(!$model->checkQuestions($id_poll, $votes))
+		//исключаем ответы не касающиеся выбранного опроса(через код страницы подменили id)
+		$cleanVotes = $model->cleanQuestions($id_poll, $votes);
+
+		//проверяем наличие обязательных ответов
+		if(!$model->checkQuestions($id_poll, $cleanVotes))
 		{			
 			$this->setRedirect($url, $model->getError(),'error');			
 			return false;
 		}
 
 		$data = new stdClass;
-		$data->votes = $votes;
+		$data->votes = $cleanVotes;
 		$data->ip = $jinput->server->get('REMOTE_ADDR');		
 		$data->user_agent = JBrowser::getInstance()->getAgentString();
 		$data->date_vote = JFactory::getDate('now', 'Europe/Minsk');	

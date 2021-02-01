@@ -173,63 +173,272 @@ class MultipollsModelPoll extends JModelItem
         return !empty($range) ? $range : 10;
 	}
 
-	//метод проверяет наличие ответов на вопросы
-	public function checkQuestions($id_poll, $votes)
-	{			
+	//метод исключает ответы не касающиеся выбранного опроса
+	public function cleanQuestions($id_poll, $votes)
+	{		
 		try
 		{
 			$db = $this->getDbo();
 			$query = $db->getQuery(true);		
 			$query->select($db->quoteName('id'));
 			$query->from($db->quoteName('#__multipolls_questions'));
-			$query->where($db->quoteName('id_poll') . ' = '. $db->quote($id_poll));	
-			$query->where($db->quoteName('id_type') . 'IN (1,6)');
+			$query->where($db->quoteName('id_poll') . ' = '. $db->quote($id_poll));				
 			$query->where($db->quoteName('published') . ' = ' . $db->quote('1'));	
 			$db->setQuery($query);	
-			$qid = $db->loadColumn();
+			$id_questions = $db->loadColumn();			
 		}
 		catch (Exception $e)
 		{		    
 		    $this->setError($e->getMessage());
 			return false;
 		}
+
+		foreach($votes as $type => $values){
+			switch ($type) {
+				case "r":
+					foreach($values as $key => $value){
+						if(!in_array($key, $id_questions)){
+							unset($votes['r'][$key]);
+						}				
+					}								
+					break;
+				case "cb":						
+					foreach($values as $key => $value){
+						if(!in_array($key, $id_questions)){
+							unset($votes['cb'][$key]);
+						}				
+					}								
+					break;
+				case "s":	
+					foreach($values as $key => $value){
+						$id_question = explode('-', $key)[0];
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['s'][$key]);
+						}				
+					}					
+					break;
+				case "ta":	
+					foreach($values as $key => $value){
+						$id_question = explode('-', $key)[0];
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['ta'][$key]);
+						}				
+					}					
+					break;
+				case "sta":		
+					foreach($values as $key => $value){
+						$id_question = explode('-', $key)[0];
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['sta'][$key]);
+						}				
+					}					
+					break;
+				case "sta-text":		
+					foreach($values as $key => $value){
+						$id_question = explode('-', $key)[0];
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['sta-text'][$key]);
+						}				
+					}					
+					break;	
+				case "ro":	
+					foreach($values as $key => $value){
+						$question = explode('-', $key);
+						if(!empty($question[1])){
+							$id_question = $question[1];
+						} else {
+							$id_question = $question[0];
+						}
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['ro'][$key]);
+							unset($votes['ro']['custom-'.$key]);
+						}
+					}					
+					break;
+				case "yn":
+					foreach($values as $key => $value){
+						$id_question = explode('-', $key)[0];
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['yn'][$key]);
+						}				
+					}						
+					break;
+				case "cbo":
+					foreach($values as $key => $value){
+						$question = explode('-', $key);
+						if(!empty($question[1])){
+							$id_question = $question[1];
+						} else {
+							$id_question = $question[0];
+						}
+						if(!in_array($id_question, $id_questions)){
+							unset($votes['cbo'][$key]);
+							unset($votes['cbo']['custom-'.$key]);
+						}
+					}					
+					break;
+				case "priority":
+					foreach($values as $key => $value){
+						if(!in_array($key, $id_questions)){
+							unset($votes['priority'][$key]);
+						}				
+					}								
+					break;					
+				default:				
+					break;													
+			}
+		}	
+
+		return $votes;
+	}
+
+	//метод проверяет наличие ответов на вопросы
+	public function checkQuestions($id_poll, $votes)
+	{
+		//получаю вопросы по выбранному опросу в виде массива 	
+		// Array ( [id_question] => Array ( [id_question] => 1 [required] => 0 [type] => r [answers] => Array ( [0] => id_answer1 [1] => id_answer2) ...)
+		try{
+			$db = $this->getDbo();
+			$query = $db->getQuery(true);		
+			$query->select($db->quoteName(array('id', 'required')));
+			$query->select("CASE".
+							" WHEN " . $db->quoteName('id_type') . " = 1 THEN 'r'".
+                            " WHEN " . $db->quoteName('id_type') . " = 2 THEN 'cb'".
+                            " WHEN " . $db->quoteName('id_type') . " = 3 THEN 's'".
+                            " WHEN " . $db->quoteName('id_type') . " = 4 THEN 'ta'".
+                            " WHEN " . $db->quoteName('id_type') . " = 5 THEN 'sta'".
+                            " WHEN " . $db->quoteName('id_type') . " = 6 THEN 'ro'".
+                            " WHEN " . $db->quoteName('id_type') . " = 7 THEN 'yn'".
+                            " WHEN " . $db->quoteName('id_type') . " = 8 THEN 'cbo'".
+                            " WHEN " . $db->quoteName('id_type') . " = 9 THEN 'priority'".
+                            " END AS " . $db->quoteName('type'));
+			$query->from($db->quoteName('#__multipolls_questions'));
+			$query->where($db->quoteName('id_poll') . ' = '. $db->quote($id_poll));				
+			$query->where($db->quoteName('published') . ' = ' . $db->quote('1'));	
+			$db->setQuery($query);	
+			$questionsByPoll = $db->loadAssocList('id');
+		} catch (Exception $e) {		    
+		    $this->setError($e->getMessage());
+			return false;
+		}
+
+		foreach($questionsByPoll as $key => $q){
+			try {
+				$query = $db->getQuery(true);		
+				$query->select($db->quoteName('id'));
+				$query->from($db->quoteName('#__multipolls_answers'));
+				$query->where($db->quoteName('id_question') . ' = '. $db->quote($q['id']));				
+				$query->where($db->quoteName('published') . ' = ' . $db->quote('1'));	
+				$db->setQuery($query);	
+				$questionsByPoll[$key]['answers'] = $db->loadColumn();
+			} catch (Exception $e) {		    
+				$this->setError($e->getMessage());
+				return false;
+			}	
+		}
 		
-		$check = array();	
-
-		foreach ($votes['r'] as $key => $value) 
-		{
-			$check[] = $key;
-		}		
-						
-
-		foreach ($votes['ro'] as $key => $value) 
-		{
-			$check[] = $key;
-
-			if ($value == 'custom' && trim($votes['ro']['custom-'.$key]) == '') 
-			{				
-				$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
-				return false;
+		foreach($questionsByPoll as $idQuestion => $questionInfo){
+			switch ($questionInfo['type']) {
+				case "r":	
+					if($questionInfo['required'] && 
+							(
+								empty($votes['r'][$idQuestion]) || 
+								(!empty($votes['r'][$idQuestion]) && !in_array($votes['r'][$idQuestion],$questionInfo['answers']))
+							)
+						){						
+						$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+						return false;
+					}																
+					break;
+				case "cb":
+					if($questionInfo['required'] && 
+							(
+								empty($votes['cb'][$idQuestion]) || 
+								(!empty($votes['cb'][$idQuestion]) && count(array_intersect($questionInfo['answers'], $votes['cb'][$idQuestion])) == 0)
+							)
+						){			
+						$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+						return false;
+					}			
+					break;
+				case "s":					
+					if($questionInfo['required']) {
+						foreach($questionInfo['answers'] as $idAnswer){
+							if(empty($votes['s'][$idQuestion.'-'.$idAnswer])){
+								$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+								return false;
+							}
+						}						
+					}					
+					break;
+				case "ta":
+					if($questionInfo['required']) {
+						foreach($questionInfo['answers'] as $idAnswer){
+							if(empty(trim($votes['ta'][$idQuestion.'-'.$idAnswer]))){
+								$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+								return false;
+							}
+						}						
+					}					
+					break;
+				case "sta":	
+					if($questionInfo['required']) {
+						foreach($questionInfo['answers'] as $idAnswer){
+							if(empty($votes['sta'][$idQuestion.'-'.$idAnswer]) || empty(trim($votes['sta-text'][$idQuestion.'-'.$idAnswer]))){
+								$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+								return false;
+							}
+						}						
+					}				
+					break;					
+				case "ro":
+					if($questionInfo['required'] && 
+							(
+								empty($votes['ro'][$idQuestion]) || 
+								(!empty($votes['ro'][$idQuestion]) && $votes['ro'][$idQuestion] != 'custom' && !in_array($votes['ro'][$idQuestion],$questionInfo['answers'])) ||
+								($votes['ro'][$idQuestion] == 'custom' && empty(trim($votes['ro']['custom-'.$idQuestion])))
+							)
+						){						
+						$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+						return false;
+					}			
+					break;
+				case "yn":
+					if($questionInfo['required']) {
+						foreach($questionInfo['answers'] as $idAnswer){
+							if(empty($votes['yn'][$idQuestion.'-'.$idAnswer])){
+								$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+								return false;
+							}
+						}						
+					}					
+					break;
+				case "cbo":
+					if($questionInfo['required'] && 
+							(
+								empty($votes['cbo'][$idQuestion]) || 
+								(!empty($votes['cbo'][$idQuestion]) && !in_array('custom', $votes['cbo'][$idQuestion]) && count(array_intersect($questionInfo['answers'], $votes['cbo'][$idQuestion])) == 0) ||
+								(in_array('custom', $votes['cbo'][$idQuestion]) && empty(trim($votes['cbo']['custom-'.$idQuestion])))
+							)
+						){			
+						$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+						return false;
+					}			
+					break;
+				case "priority":
+					if($questionInfo['required']) {
+						foreach($questionInfo['answers'] as $idAnswer){
+							if(!in_array($idAnswer, $votes['priority'][$idQuestion])){
+								$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
+								return false;
+							}
+						}						
+					}						
+					break;					
+				default:				
+					break;													
 			}
-		}	
-
-		foreach ($votes['cbo'] as $key => $value) 
-		{
-			if (in_array('custom', $value) && trim($votes['cbo']['custom-'.$key]) == '') 
-			{				
-				$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
-				return false;
-			}
-		}	
-
-		foreach ($qid as $value) 
-		{ 
-			if (!in_array($value, $check)) 
-			{
-				$this->setError(JText::_('COM_MULTIPOLLS_VOTES_ERROR'));		
-				return false;
-			}
-		}		
+		}
 
 		return true;
 	}

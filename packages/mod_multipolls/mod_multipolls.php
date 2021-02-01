@@ -59,13 +59,17 @@ if(!empty($post_id_poll) && !$check_cookie)
 	JModelLegacy::addIncludePath(JPATH_SITE .'/components/com_multipolls/models');	
 	$model = JModelLegacy::getInstance('Poll', 'MultipollsModel');
 
-	if(!$model->checkQuestions($post_id_poll, $votes))
+	//исключаем ответы не касающиеся выбранного опроса(через код страницы подменили id)
+	$cleanVotes = $model->cleanQuestions($post_id_poll, $votes);
+
+	//проверяем наличие обязательных ответов
+	if(!$model->checkQuestions($post_id_poll, $cleanVotes))
 	{		
 		$app->redirect($curr_url, JText::_('MOD_MULTIPOLLS_VOTES_ERROR'),'error');
 	}
 
 	$data = new stdClass;
-	$data->votes = $votes;
+	$data->votes = $cleanVotes;
 	$data->ip = $app->input->server->get('REMOTE_ADDR');		
 	$data->user_agent = JBrowser::getInstance()->getAgentString();
 	$data->date_vote = JFactory::getDate('now', 'Europe/Minsk');
