@@ -22,12 +22,14 @@ defined( '_JEXEC' ) or die;
 			</tbody>
 		</table>	
 		
-	<?php endforeach; ?>
+	<?php endforeach; ?>	
 
-	<h4><?php echo JText::_('COM_MULTIPOLLS_OWN_ANSWERS') ?></h4>
+<?php endif; ?> 
 
+<h4><?php echo JText::_('COM_MULTIPOLLS_OWN_ANSWERS') ?></h4>
+
+<?php if(!empty($this->question['textvotes'])) : ?>
 	<?php foreach ($this->question['textvotes'] as $textvote) : ?>
 		<p><?php echo $textvote; ?></p>
 	<?php endforeach; ?>
-
 <?php endif; ?> 

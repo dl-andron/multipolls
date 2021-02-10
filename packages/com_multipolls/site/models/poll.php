@@ -641,27 +641,29 @@ class MultipollsModelPoll extends JModelItem
 				$query->columns($db->quoteName($columns));		
 
 				foreach ($data->votes['ro'] as $key => $vote) 
-				{	
-					if(strpos($key, 'custom-') !== false)
-					{	
+				{
+					if(strpos($key, 'custom-') !== false) {	
 						continue;						
-					}					
+					}	
 					
-					elseif($vote == 'custom')
-					{
+					//показывает что есть данные для вставки
+					$exist_data = false;
+					
+					if($vote == 'custom') {
 						$rows = array($db->quote($key), $db->quote(''), $db->quote($data->votes['ro']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));						
-					}
-
-					else
-					{
+						$exist_data = true;
+					} else {
 						$rows = array($db->quote($key), $db->quote($vote), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+						$exist_data = true;
 					}					
-				   
+				 
 				    $query->values(implode(',', $rows));		       
 				}
-			
-			    $db->setQuery($query);
-				$db->execute();
+				
+				if($exist_data){					
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
 
 			catch (Exception $e)
