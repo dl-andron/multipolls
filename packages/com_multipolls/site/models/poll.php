@@ -445,6 +445,8 @@ class MultipollsModelPoll extends JModelItem
 
 	public function saveVote($data)
 	{
+		$id_user = JFactory::getUser()->id;
+
 		$db = $this->getDbo();
 		$query = $db->getQuery(true);		
 
@@ -454,13 +456,13 @@ class MultipollsModelPoll extends JModelItem
 		{
 			try
 			{					
-				$columns = array('id_question','id_answer', 'ip', 'user_agent', 'date_voting');				
+				$columns = array('id_question','id_answer', 'id_user', 'ip', 'user_agent', 'date_voting');		
 				$query->insert($db->quoteName('#__multipolls_radio_votes'));
 				$query->columns($db->quoteName($columns));		
 
 				foreach ($data->votes['r'] as $key => $vote) 
 				{			
-				    $rows = array($db->quote($key), $db->quote($vote), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+				    $rows = array($db->quote($key), $db->quote($vote), $db->quote($id_user), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
 				    $query->values(implode(',', $rows));		       
 				}
 			
