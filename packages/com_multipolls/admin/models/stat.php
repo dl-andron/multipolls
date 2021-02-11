@@ -89,7 +89,7 @@ class MultipollsModelStat extends JModelLegacy
         return $result;
     }
 
-    private function _getRadioVotes($id_question)
+    protected function _getRadioVotes($id_question)
     {
         $db = $this->getDbo();
         
@@ -125,7 +125,7 @@ class MultipollsModelStat extends JModelLegacy
     //это считается за одное участие в этом вопросе
     //результат одного чекбокса: это сколько раз выбрали чекбокс
     //относительно общего количества участий в вопросе в процентах
-    private function _getCbVotes($id_question)
+    protected function _getCbVotes($id_question)
     {
         $db = $this->getDbo();
        
@@ -175,7 +175,7 @@ class MultipollsModelStat extends JModelLegacy
 
     }
 
-    private function _getSelectVotes($id_question)
+    protected function _getSelectVotes($id_question)
     {
         $db = $this->getDbo();        
         
@@ -203,7 +203,7 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;
     }
 
-    private function _getTextVotes($id_question)
+    protected function _getTextVotes($id_question)
     {
         $db = $this->getDbo();
 
@@ -237,7 +237,7 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;
     }
 
-    private function _getSelectTextVotes($id_question)
+    protected function _getSelectTextVotes($id_question)
     {
         $db = $this->getDbo();
 
@@ -293,7 +293,7 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;        
     }
 
-    private function _getRadioOwnVotes($id_question)
+    protected function _getRadioOwnVotes($id_question)
     {
         $db = $this->getDbo();
 
@@ -339,7 +339,7 @@ class MultipollsModelStat extends JModelLegacy
         return $result; 
     }
 
-    private function _getYnVotes($id_question)
+    protected function _getYnVotes($id_question)
     {
         $db = $this->getDbo();        
         
@@ -378,7 +378,7 @@ class MultipollsModelStat extends JModelLegacy
     //это считается за одное участие в этом вопросе
     //результат одного чекбокса: это сколько раз в процентах выбрали чекбокс
     //относительно общего количества участий в вопросе
-    private function _getCbOwnVotes($id_question)
+    protected function _getCbOwnVotes($id_question)
     {
         $db = $this->getDbo();
        
@@ -440,7 +440,7 @@ class MultipollsModelStat extends JModelLegacy
 
     }
 
-    private function _getPriorityVotes($id_question)
+    protected function _getPriorityVotes($id_question)
     {
         $db = $this->getDbo();        
         
@@ -468,7 +468,7 @@ class MultipollsModelStat extends JModelLegacy
         return $ids;
     }
 
-    private function _getAnswers($id_question)
+    protected function _getAnswers($id_question)
     {
         $db = $this->getDbo();
 
