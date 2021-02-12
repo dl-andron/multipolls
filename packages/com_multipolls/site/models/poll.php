@@ -649,20 +649,20 @@ class MultipollsModelPoll extends JModelItem
 					}	
 					
 					//показывает что есть данные для вставки
-					$exist_data = false;
+					$exist_data_ro = false;
 					
 					if($vote == 'custom') {
 						$rows = array($db->quote($key), $db->quote(''), $db->quote($id_user), $db->quote($data->votes['ro']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));						
-						$exist_data = true;
+						$exist_data_ro = true;
 					} else {
 						$rows = array($db->quote($key), $db->quote($vote), $db->quote($id_user), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
-						$exist_data = true;
+						$exist_data_ro = true;
 					}					
 				 
 				    $query->values(implode(',', $rows));		       
 				}
 				
-				if($exist_data){					
+				if($exist_data_ro){					
 					$db->setQuery($query);
 					$db->execute();
 				}
@@ -722,7 +722,7 @@ class MultipollsModelPoll extends JModelItem
 					}	
 
 					//показывает что есть данные для вставки
-					$exist_data = false;
+					$exist_data_cbo = false;
 					
 					if(in_array('custom', $vote)){							
 						$rows = array($db->quote($key), $db->quote(''), $db->quote($data->votes['cbo']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
@@ -732,18 +732,18 @@ class MultipollsModelPoll extends JModelItem
 
 						$query->values(implode(',', $rows));
 
-						$exist_data = true;
+						$exist_data_cbo = true;
 					}
 
 					if(!empty($vote)) {
 						$rows = array($db->quote($key), $db->quote(implode(",", $vote)), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
 				    	$query->values(implode(',', $rows));
 
-				    	$exist_data = true;
+				    	$exist_data_cbo = true;
 					}														       
 				}
 			   	
-			   	if($exist_data){
+			   	if($exist_data_cbo){
 			   		$db->setQuery($query);
 					$db->execute();
 			   	}			    
