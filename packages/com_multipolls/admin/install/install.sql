@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS `#__multipolls_radio_own_votes` (
   `id_vote` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_question` int(10) unsigned NOT NULL,
   `id_answer` varchar(50) DEFAULT NULL,
+  `id_user` int(10) unsigned NULL DEFAULT '0',
   `own_answer` text,
   `ip` text NOT NULL,
   `user_agent` text NOT NULL,

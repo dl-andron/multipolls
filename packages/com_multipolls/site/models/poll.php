@@ -638,7 +638,7 @@ class MultipollsModelPoll extends JModelItem
 		{
 			try
 			{					
-				$columns = array('id_question','id_answer', 'own_answer' ,'ip', 'user_agent', 'date_voting');				
+				$columns = array('id_question','id_answer', 'id_user', 'own_answer' ,'ip', 'user_agent', 'date_voting');				
 				$query->insert($db->quoteName('#__multipolls_radio_own_votes'));
 				$query->columns($db->quoteName($columns));		
 
@@ -652,10 +652,10 @@ class MultipollsModelPoll extends JModelItem
 					$exist_data = false;
 					
 					if($vote == 'custom') {
-						$rows = array($db->quote($key), $db->quote(''), $db->quote($data->votes['ro']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));						
+						$rows = array($db->quote($key), $db->quote(''), $db->quote($id_user), $db->quote($data->votes['ro']['custom-'.$key]), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));						
 						$exist_data = true;
 					} else {
-						$rows = array($db->quote($key), $db->quote($vote), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
+						$rows = array($db->quote($key), $db->quote($vote), $db->quote($id_user), $db->quote(''), $db->quote($data->ip), $db->quote($data->user_agent), $db->quote($data->date_vote));
 						$exist_data = true;
 					}					
 				 
